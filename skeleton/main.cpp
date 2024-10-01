@@ -33,8 +33,32 @@ PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
 //Item list
+RenderItem* ejex;
+RenderItem* ejey;
+RenderItem* ejez;
+RenderItem* origen;
 Particle* particle;
 
+void initExex() {
+	physx::PxSphereGeometry sphere = PxSphereGeometry(1);
+	physx::PxShape* shape1 = CreateShape(sphere);
+	//Origen
+	Vector3D v_origen = Vector3D(0, 0, 0);
+	physx::PxTransform* trans_origen = new PxTransform(v_origen.x, v_origen.y, v_origen.z);
+	origen = new RenderItem(shape1, trans_origen, physx::PxVec4(1, 1, 1, 1));
+	//Eje x
+	Vector3D x = Vector3D(10, 0, 0);
+	physx::PxTransform* trans_x = new PxTransform(x.x, x.y, x.z);
+	ejex = new RenderItem(shape1, trans_x, physx::PxVec4(1, 0, 0, 1));
+	//Eje y
+	Vector3D y = Vector3D(0, 10, 0);
+	physx::PxTransform* trans_y = new PxTransform(y.x, y.y, y.z);
+	ejey = new RenderItem(shape1, trans_y, physx::PxVec4(0, 1, 0, 1));
+	//Eje z
+	Vector3D z = Vector3D(0, 0, 10);
+	physx::PxTransform* trans_z = new PxTransform(z.x, z.y, z.z);
+	ejez = new RenderItem(shape1, trans_z, physx::PxVec4(0, 0, 1, 1));
+}
 
 
 // Initialize physics engine
@@ -61,9 +85,10 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	particle = new Particle(Vector3(0,20,0), Vector3(5,0,0), Vector3(5, 0, 0));
+	initExex();
 
-	}
+	particle = new Particle(Vector3(0,20,0), Vector3(5,0,0), Vector3(5, 0, 0), 0.99);
+}
 
 
 // Function to configure what happens in each step of physics
@@ -84,6 +109,12 @@ void stepPhysics(bool interactive, double t)
 void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
+
+	DeregisterRenderItem(ejex);
+	DeregisterRenderItem(ejey);
+	DeregisterRenderItem(ejez);
+	DeregisterRenderItem(origen);
+	delete particle;
 	
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -101,8 +132,6 @@ void cleanupPhysics(bool interactive)
 void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
-
-	delete particle;
 
 	switch(toupper(key))
 	{
@@ -122,7 +151,6 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 	PX_UNUSED(actor1);
 	PX_UNUSED(actor2);
 }
-
 
 int main(int, const char*const*)
 {
