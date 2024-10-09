@@ -3,7 +3,7 @@
 #include "RenderUtils.hpp"
 class Particle
 {
-private:
+protected:
 	Vector3 vel;
 	Vector3 a;
 	physx::PxTransform pose;
@@ -15,7 +15,7 @@ public:
 		renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), &pose, physx::PxVec4(1, 1, 1, 1));
 		RegisterRenderItem(renderItem);
 	}
-	~Particle() {
+	virtual ~Particle() {
 		DeregisterRenderItem(renderItem);
 		delete renderItem;
 	};

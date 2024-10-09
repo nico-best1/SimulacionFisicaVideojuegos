@@ -9,6 +9,7 @@
 #include "callbacks.hpp"
 #include "Vector3D.h"
 #include "Particle.h"
+#include "Proyectile.h"
 
 #include <iostream>
 
@@ -38,6 +39,9 @@ RenderItem* ejey;
 RenderItem* ejez;
 RenderItem* origen;
 Particle* particle;
+std::vector<Proyectile*> projectiles;
+
+
 
 void initExex() {
 	physx::PxSphereGeometry sphere = PxSphereGeometry(1);
@@ -86,23 +90,27 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 	initExex();
-
-	particle = new Particle(Vector3(0,20,0), Vector3(5,0,0), Vector3(5, 0, 0), 0.99);
 }
 
 
 // Function to configure what happens in each step of physics
 // interactive: true if the game is rendering, false if it offline
 // t: time passed since last call in milliseconds
+// Function to configure what happens in each step of physics
 void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
 
-	particle->integrate(t);
+	// Integrar cada proyectil en la lista
+	for (auto it = projectiles.begin(); it != projectiles.end(); ) {
+		(*it)->integrate(t);
+			++it;
+	}
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 }
+
 
 // Function to clean data
 // Add custom code to the begining of the function
@@ -115,6 +123,10 @@ void cleanupPhysics(bool interactive)
 	DeregisterRenderItem(ejez);
 	DeregisterRenderItem(origen);
 	delete particle;
+	for (auto proj : projectiles) {
+		delete proj;
+	}
+	projectiles.clear();
 	
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -126,25 +138,34 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
-	}
+}
 
+void shootProyectile(Vector3 camPos, Vector3 camVel, double real_velocity, double simulated_velocity) {
+	double mass = 1.0; 
+	double Damping = 0.99; 
+	projectiles.push_back(new Proyectile(mass, camPos, camVel, Vector3(0, 0, 0), Damping, real_velocity, simulated_velocity));
+}
+
+// Function called when a key is pressed
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
-	switch(toupper(key))
+	switch (toupper(key))
 	{
-	//case 'B': break;
-	//case ' ':	break;
-	case ' ':
+	case 'P': 
 	{
+		double real_velocity = 2000.0;   
+		double simulated_velocity = 50.0; 
+		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);
 		break;
 	}
 	default:
 		break;
 	}
 }
+
 
 void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {
