@@ -20,6 +20,6 @@ public:
 		delete renderItem;
 	};
 
-	void integrate(double t);
+	virtual void integrate(double t);
 };
 

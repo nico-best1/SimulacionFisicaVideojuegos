@@ -17,8 +17,9 @@ public:
 
     ~Proyectile() {}
 
-    void integrate(double t) {
-        a += gravity;
-        Particle::integrate(t);
+     virtual void integrate(double t) {
+         vel += (a + gravity) * t;
+         vel *= pow(damping, t);
+         pose.p += vel * t;
     }
 };
