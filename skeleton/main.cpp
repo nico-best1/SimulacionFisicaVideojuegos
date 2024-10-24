@@ -10,6 +10,8 @@
 #include "Vector3D.h"
 #include "Particle.h"
 #include "Proyectile.h"
+#include "ParticleSystem.h"
+#include "ParticleGenerator.h"
 
 #include <iostream>
 
@@ -40,6 +42,7 @@ RenderItem* ejez;
 RenderItem* origen;
 Particle* particle;
 std::vector<Proyectile*> projectiles;
+ParticleSystem particleSystem;
 
 
 
@@ -106,6 +109,8 @@ void stepPhysics(bool interactive, double t)
 		(*it)->integrate(t);
 			++it;
 	}
+
+	particleSystem.update(t);
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
