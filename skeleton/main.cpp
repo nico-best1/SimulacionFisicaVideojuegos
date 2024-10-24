@@ -159,13 +159,17 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch (toupper(key))
 	{
-	case 'P':
+	case 'U':
 	{
-		double real_velocity = 100.0;
+		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
-		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);
+		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);*/
+		particleSystem.addGenerator(Vector3(0,0,0), DistributionType::Uniform, 100, 300, 100);
 		break;
 	}
+	case 'G':
+		particleSystem.addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 100, 300, 100);
+		break;
 	default:
 		break;
 	}

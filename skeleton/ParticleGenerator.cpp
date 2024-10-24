@@ -3,23 +3,44 @@
 
 void ParticleGenerator::update(double t)
 {
-	particulas.push_back(new Particle(iniPos, Vector3(generateGausssian(0.0, 2), generateGausssian(20, 2), generateGausssian(0, 2)), Vector3(0, -9.8, 0), 0.998));
-    for (auto it = particulas.begin(); it != particulas.end(); ) {
-        Particle* p = *it; 
-        p->integrate(t);          
-        if (p->isDead() || p->isOutOfBounds(AREA_X, AREA_Y)) {
-            delete p;              
-            it = particulas.erase(it); 
+    float velocityX, velocityY, velocityZ;
+    if (distributionType == DistributionType::Gaussian) {
+        velocityX = generateGaussian(0.0, 2);
+        velocityY = generateGaussian(20, 2);
+        velocityZ = generateGaussian(0, 2);
+    }
+    else { 
+        velocityX = generateUniform(-10.0, 10.0);
+        velocityY = generateUniform(10, 30);
+        velocityZ = generateUniform(-10.0, 10.0);
+    }
+
+    particles.push_back(new Particle(initialPosition, Vector3(velocityX, velocityY, velocityZ), Vector3(0, -9.8, 0), 0.99, particleLifetime));
+
+    for (auto it = particles.begin(); it != particles.end(); ) {
+        Particle* p = *it;
+        p->integrate(t);
+        if (p->isDead() || p->isOutOfBounds(dipersion_area_x, dipersion_area_y)) {
+            delete p;             
+            it = particles.erase(it); 
         }
         else {
-            ++it; 
+            ++it;
         }
     }
 }
 
-float ParticleGenerator::generateGausssian(float mean, float stddev)
+
+float ParticleGenerator::generateGaussian(float mean, float stddev)
 {
 	static std::default_random_engine generator;
 	std::normal_distribution<float>distribution(mean, stddev);
 	return distribution(generator);
+}
+
+float ParticleGenerator::generateUniform(float min, float max)
+{
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<float> distribution(min, max);
+    return distribution(generator);
 }

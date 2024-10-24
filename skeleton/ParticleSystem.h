@@ -8,16 +8,16 @@ using namespace std;
 class ParticleSystem
 {
 private:
-	vector<ParticleGenerator*>generador;
+	vector<ParticleGenerator*>generators;
 public:
-	ParticleSystem() {
-		generador.push_back(new ParticleGenerator(Vector3(0, 0, 0)));
+	ParticleSystem() {}
+
+	void addGenerator(Vector3 pos, DistributionType distributionType, int dipersion_area_x_, int dipersion_area_y_, double particleLifetime) {
+		generators.push_back(new ParticleGenerator(pos, distributionType, dipersion_area_x_, dipersion_area_y_, particleLifetime));
 	}
-	void addGenerator() {
-		generador.push_back(new ParticleGenerator(Vector3(0, 0, 0)));
-	}
+
 	void update(double t) {
-		for (auto e : generador) {
+		for (auto e : generators) {
 			e->update(t);
 		}
 	}
