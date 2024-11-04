@@ -12,6 +12,8 @@
 #include "Proyectile.h"
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
+#include "GravitationalForceGenerator.h"
+#include "ForceGenerator.h"
 
 #include <iostream>
 
@@ -94,8 +96,8 @@ void initPhysics(bool interactive)
 
 	initExex();
 	particleSystem = new ParticleSystem();
-	/*particle = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 1);
-	delete particle;*/
+	GravitationalForceGenerator* gravity = new GravitationalForceGenerator(Vector3(0, -4.8, 0));
+	particleSystem->addForceGenerator(gravity);
 }
 
 
@@ -166,11 +168,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
 		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);*/
-		particleSystem->addGenerator(Vector3(0,0,0), DistributionType::Uniform, 10, 30, 3);
+		particleSystem->addGenerator(Vector3(0,0,0), DistributionType::Uniform, 100, 300, 3);
 		break;
 	}
 	case 'G':
-		particleSystem->addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 10, 30, 3);
+		particleSystem->addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 100, 300, 3);
 		break;
 	default:
 		break;

@@ -30,4 +30,6 @@ public:
 	}
 
 	void update(double t);
+
+	std::list<Particle*> getParticles() { return particles; }
 };

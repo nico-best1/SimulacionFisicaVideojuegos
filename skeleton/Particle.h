@@ -12,6 +12,8 @@ protected:
 	RenderItem* renderItem;
 	double damping;
 	double lifetime;
+	double mass;
+	Vector3 accumulatedForce;
 public:
 	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_) 
 		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_){
@@ -34,12 +36,18 @@ public:
 	Vector3 getVelocity() { return vel; }
 	Vector3 getPosition() { return pose.p; }
 
+	void addForce(const Vector3& force) {
+		accumulatedForce += force;
+	}
+
 	virtual void integrate(double t) {
 		if (lifetime <= 0) return;
+		a = accumulatedForce / mass;
 		vel += a * t;
 		vel *= pow(damping, t);
 		pose.p += vel * t;
 		lifetime -= t;
+		accumulatedForce = Vector3(0, 0, 0);
 	}
 
 	bool isDead() const { 
@@ -50,5 +58,7 @@ public:
 		return pose.p.x > area_x || pose.p.x < -area_x ||
 			pose.p.y > area_y || pose.p.y < -area_y;
 	}
+
+	double getMass() { return mass; }
 };
 
