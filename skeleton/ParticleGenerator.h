@@ -15,6 +15,7 @@ private:
 	DistributionType distributionType;
 	int dipersion_area_x, dipersion_area_y;
 	double particleLifetime;
+	int rate = 1;
 
 	float generateGaussian(float mean, float stddev);
 	float generateUniform(float min, float max);

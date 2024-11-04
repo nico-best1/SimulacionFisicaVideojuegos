@@ -18,15 +18,17 @@ void ParticleGenerator::update(double t)
     particles.push_back(new Particle(initialPosition, Vector3(velocityX, velocityY, velocityZ), Vector3(0, -9.8, 0), 0.99, particleLifetime));
 
     for (auto it = particles.begin(); it != particles.end(); ) {
-        Particle* p = *it;
-        p->integrate(t);
-        if (p->isDead() || p->isOutOfBounds(dipersion_area_x, dipersion_area_y)) {
-            delete p;             
-            it = particles.erase(it); 
+        (*it)->integrate(t);
+        if ((*it)->isDead() || (*it)->isOutOfBounds(dipersion_area_x, dipersion_area_y)) {
+            auto aux = it;
+            ++it;
+            delete (*aux);
+            particles.erase(aux);
         }
         else {
             ++it;
         }
+      
     }
 }
 

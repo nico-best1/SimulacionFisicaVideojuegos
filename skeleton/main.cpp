@@ -42,7 +42,7 @@ RenderItem* ejez;
 RenderItem* origen;
 Particle* particle;
 std::vector<Proyectile*> projectiles;
-ParticleSystem particleSystem;
+ParticleSystem* particleSystem;
 
 
 
@@ -93,6 +93,9 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 	initExex();
+	particleSystem = new ParticleSystem();
+	/*particle = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 1);
+	delete particle;*/
 }
 
 
@@ -110,7 +113,7 @@ void stepPhysics(bool interactive, double t)
 			++it;
 	}
 
-	particleSystem.update(t);
+	particleSystem->update(t);
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
@@ -127,7 +130,6 @@ void cleanupPhysics(bool interactive)
 	DeregisterRenderItem(ejey);
 	DeregisterRenderItem(ejez);
 	DeregisterRenderItem(origen);
-	delete particle;
 	for (auto proj : projectiles) {
 		delete proj;
 	}
@@ -164,11 +166,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
 		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);*/
-		particleSystem.addGenerator(Vector3(0,0,0), DistributionType::Uniform, 100, 300, 100);
+		particleSystem->addGenerator(Vector3(0,0,0), DistributionType::Uniform, 10, 30, 3);
 		break;
 	}
 	case 'G':
-		particleSystem.addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 100, 300, 100);
+		particleSystem->addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 10, 30, 3);
 		break;
 	default:
 		break;

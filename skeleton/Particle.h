@@ -1,6 +1,8 @@
 #pragma once
 #include <PxPhysicsAPI.h>
 #include "RenderUtils.hpp"
+
+using namespace physx;
 class Particle
 {
 protected:
@@ -14,16 +16,19 @@ public:
 	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_) 
 		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_){
 		pose = physx::PxTransform(Pos);
-		renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), &pose, physx::PxVec4(1, 1, 1, 1));
+		PxShape*  shape = CreateShape(physx::PxSphereGeometry(1));
+	/*	renderItem = new RenderItem();
+		renderItem->shape = shape;
+		renderItem->transform = &pose;
+		renderItem->color = Vector4(1,1,1,1);*/
+		renderItem = new RenderItem(shape, &pose, physx::PxVec4(1, 1, 1, 1));
 		RegisterRenderItem(renderItem);
 	}
 
-	virtual ~Particle() {
-		if (renderItem != nullptr) {
-			DeregisterRenderItem(renderItem);
-			delete renderItem;
-			renderItem = nullptr;
-		}
+	~Particle() {
+		DeregisterRenderItem(renderItem);	
+		//delete renderItem;
+		//renderItem = nullptr;
 	};
 
 	Vector3 getVelocity() { return vel; }
