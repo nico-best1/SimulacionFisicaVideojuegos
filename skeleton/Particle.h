@@ -12,8 +12,8 @@ protected:
 	RenderItem* renderItem;
 	double damping;
 	double lifetime;
-	double mass;
-	Vector3 accumulatedForce;
+	double mass = 100;
+	Vector3 accumulatedForce =Vector3(0,0,0);
 public:
 	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_) 
 		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_){
@@ -47,7 +47,6 @@ public:
 		vel *= pow(damping, t);
 		pose.p += vel * t;
 		lifetime -= t;
-		accumulatedForce = Vector3(0, 0, 0);
 	}
 
 	bool isDead() const { 

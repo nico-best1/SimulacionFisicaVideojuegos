@@ -96,8 +96,10 @@ void initPhysics(bool interactive)
 
 	initExex();
 	particleSystem = new ParticleSystem();
-	GravitationalForceGenerator* gravity = new GravitationalForceGenerator(Vector3(0, -4.8, 0));
+	GravitationalForceGenerator* gravity = new GravitationalForceGenerator(Vector3(0, -9.8, 0));
+	GravitationalForceGenerator* gravity1 = new GravitationalForceGenerator(Vector3(0, 9.8, 0));
 	particleSystem->addForceGenerator(gravity);
+	particleSystem->addForceGenerator(gravity1);
 }
 
 
@@ -168,11 +170,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
 		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);*/
-		particleSystem->addGenerator(Vector3(0,0,0), DistributionType::Uniform, 100, 300, 3);
+		particleSystem->addGenerator(Vector3(0,0,0), DistributionType::Uniform, 100, 300, 10);
 		break;
 	}
 	case 'G':
-		particleSystem->addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 100, 300, 3);
+		particleSystem->addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 100, 300, 10);
 		break;
 	default:
 		break;
