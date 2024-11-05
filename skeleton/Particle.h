@@ -19,18 +19,12 @@ public:
 		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_){
 		pose = physx::PxTransform(Pos);
 		PxShape*  shape = CreateShape(physx::PxSphereGeometry(1));
-	/*	renderItem = new RenderItem();
-		renderItem->shape = shape;
-		renderItem->transform = &pose;
-		renderItem->color = Vector4(1,1,1,1);*/
 		renderItem = new RenderItem(shape, &pose, physx::PxVec4(1, 1, 1, 1));
 		RegisterRenderItem(renderItem);
 	}
 
 	~Particle() {
 		DeregisterRenderItem(renderItem);	
-		//delete renderItem;
-		//renderItem = nullptr;
 	};
 
 	Vector3 getVelocity() { return vel; }

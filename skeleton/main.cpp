@@ -13,6 +13,9 @@
 #include "ParticleSystem.h"
 #include "ParticleGenerator.h"
 #include "GravitationalForceGenerator.h"
+#include "WindForceGenerator.h"
+#include "ExplosionForceGenerator.h"
+#include "TornadoForceGenerator.h"
 #include "ForceGenerator.h"
 
 #include <iostream>
@@ -37,6 +40,8 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
+double simulationTime = 0.0; // Tiempo de simulación en segundos
+
 //Item list
 RenderItem* ejex;
 RenderItem* ejey;
@@ -45,6 +50,7 @@ RenderItem* origen;
 Particle* particle;
 std::vector<Proyectile*> projectiles;
 ParticleSystem* particleSystem;
+ExplosionForceGenerator* explosionForce;
 
 
 
@@ -96,10 +102,28 @@ void initPhysics(bool interactive)
 
 	initExex();
 	particleSystem = new ParticleSystem();
-	GravitationalForceGenerator* gravity = new GravitationalForceGenerator(Vector3(0, -9.8, 0));
+	/*GravitationalForceGenerator* gravity = new GravitationalForceGenerator(Vector3(0, -9.8, 0));
 	GravitationalForceGenerator* gravity1 = new GravitationalForceGenerator(Vector3(0, 9.8, 0));
 	particleSystem->addForceGenerator(gravity);
-	particleSystem->addForceGenerator(gravity1);
+	particleSystem->addForceGenerator(gravity1);*/
+
+	//Vector3 windVel(10.0, 0.0, 0.0);  // Ejemplo de viento en dirección positiva del eje X
+	//float k1 = 0.1f;  // Ajusta el coeficiente de resistencia según sea necesario
+	//WindForceGenerator* windForce = new WindForceGenerator(windVel, k1);
+	//particleSystem->addForceGenerator(windForce);
+
+	Vector3 tornadoCenter(0, 0, 0);  // Centro del torbellino
+	float tornadoIntensity = 10.0f;  // Ajusta la intensidad según sea necesario
+	float tornadoRadius = 50.0f;     // Radio de acción del torbellino
+	TornadoForceGenerator* tornadoForce = new TornadoForceGenerator(tornadoCenter, tornadoIntensity, tornadoRadius);
+	particleSystem->addForceGenerator(tornadoForce);
+
+	/*Vector3 explosionCenter(0, 0, 0);  
+	float explosionRadius = 50.0f;
+	float explosionIntensity = 1000.0f;
+	float explosionTau = 1.0f;
+	explosionForce = new ExplosionForceGenerator(explosionCenter, explosionRadius, explosionIntensity, explosionTau);
+	particleSystem->addForceGenerator(explosionForce);*/
 }
 
 
@@ -110,6 +134,8 @@ void initPhysics(bool interactive)
 void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
+
+	simulationTime += t;
 
 	// Integrar cada proyectil en la lista
 	for (auto it = projectiles.begin(); it != projectiles.end(); ) {
@@ -158,23 +184,24 @@ void shootProyectile(Vector3 camPos, Vector3 camVel, double real_velocity, doubl
 }
 
 // Function called when a key is pressed
-// Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
 	switch (toupper(key))
 	{
+	case 'E': 
+		explosionForce->trigger(simulationTime);  
+		break;
 	case 'U':
 	{
 		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
 		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);*/
-		particleSystem->addGenerator(Vector3(0,0,0), DistributionType::Uniform, 100, 300, 10);
 		break;
 	}
 	case 'G':
-		particleSystem->addGenerator(Vector3(10, 0, 0), DistributionType::Gaussian, 100, 300, 10);
+		particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10);
 		break;
 	default:
 		break;

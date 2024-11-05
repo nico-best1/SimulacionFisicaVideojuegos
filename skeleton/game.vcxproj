@@ -264,10 +264,12 @@
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Render.cpp" />
+    <ClCompile Include="WindForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="core.hpp" />
+    <ClInclude Include="ExplosionForceGenerator.h" />
     <ClInclude Include="ForceGenerator.h" />
     <ClInclude Include="GravitationalForceGenerator.h" />
     <ClInclude Include="Particle.h" />
@@ -277,6 +279,8 @@
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />
+    <ClInclude Include="TornadoForceGenerator.h" />
+    <ClInclude Include="WindForceGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
