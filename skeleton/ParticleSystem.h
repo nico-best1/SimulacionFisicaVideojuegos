@@ -9,12 +9,13 @@ using namespace std;
 class ParticleSystem
 {
 private:
-	vector<ForceGenerator*> forceGenerators;
+	std::list<ForceGenerator*> forceGenerators;
 	vector<ParticleGenerator*>generators;
+	bool activeExplosion;
 protected:
 	std::list<Particle*>particles;
 public:
-	ParticleSystem() {}
+	ParticleSystem() { activeExplosion = false; }
 
 	void addGenerator(Vector3 pos, DistributionType distributionType, int dipersion_area_x_, int dipersion_area_y_, double particleLifetime) {
 		generators.push_back(new ParticleGenerator(pos, distributionType, dipersion_area_x_, dipersion_area_y_, particleLifetime));
@@ -31,14 +32,17 @@ public:
 	std::list<Particle*> getParticles() { return particles; }
 
 	void update(double t) {
-		for (auto e : generators) {
-			e->update(this, t);
+		if (!activeExplosion) {
+			for (auto g : generators) {
+				g->update(this, t);
+			}
 		}
 
 		for (auto it = particles.begin(); it != particles.end(); ) {
 			for (auto& fg : forceGenerators) {
-				fg->updateForce((*it), t);
+				fg->update(t, this);
 			}
+			applyForces(*it);
 			(*it)->integrate(t);
 			if ((*it)->isDead() || (*it)->isOutOfBounds(100, 300)) {
 				auto aux = it;
@@ -51,7 +55,25 @@ public:
 			}
 
 		}
-
-	
 	}
+
+	void ParticleSystem::applyForces(Particle* p) {
+		physx::PxVec3 totalForce(0, 0, 0);
+		auto it = forceGenerators.begin();
+		while (it != forceGenerators.end()) {
+			if ((*it)->isAlive()) {
+				totalForce += (*it)->calculateForce(p);
+				++it;
+			}
+			else {
+				auto aux = it;
+				++it;
+				delete* aux;
+				forceGenerators.erase(aux);
+			}
+		}
+		p->setForce(totalForce);
+	}
+
+	void setExplosion(bool active) { activeExplosion = active; };
 };

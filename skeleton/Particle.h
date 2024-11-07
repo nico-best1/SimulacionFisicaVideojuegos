@@ -12,7 +12,7 @@ protected:
 	RenderItem* renderItem;
 	double damping;
 	double lifetime;
-	double mass = 100;
+	double mass = 0.1;
 	Vector3 accumulatedForce =Vector3(0,0,0);
 public:
 	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_) 
@@ -53,5 +53,9 @@ public:
 	}
 
 	double getMass() { return mass; }
+
+	void setForce(physx::PxVec3 newforce) {
+		accumulatedForce = newforce;
+	}
 };
 
