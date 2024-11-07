@@ -1,9 +1,9 @@
 #include "TorbellinoForceGenerator.h"
-TorbellinoForceGenerator::TorbellinoForceGenerator(const physx::PxVec3& velocidad, float k1, float k2, physx::PxVec3 centro, float radio, float intensity) :
-	WindForceGenerator(velocidad, k1, k2, centro, radio), intensity(intensity) {
+TorbellinoForceGenerator::TorbellinoForceGenerator(const Vector3& windVelocity, float k1, float k2, Vector3 center, float radius, float intensity) :
+	WindForceGenerator(windVelocity, k1, k2, center, radius), intensity(intensity) {
 }
 
-void TorbellinoForceGenerator::calculateVel(Particle* p) {
-	physx::PxVec3 vTor = { -(p->getPosition().z - centro.z), 0, p->getPosition().x - centro.x };
-	velocidad = intensity * vTor;
+void TorbellinoForceGenerator::calculateVelocity(Particle* p) {
+	Vector3 velocity_Torbellino = { -(p->getPosition().z - center.z), 0, p->getPosition().x - center.x };
+	windVelocity = intensity * velocity_Torbellino;
 }

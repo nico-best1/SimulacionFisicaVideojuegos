@@ -1,11 +1,12 @@
 #include "WindForceGenerator.h"
-WindForceGenerator::WindForceGenerator(const Vector3& velocidad, float k1, float k2, physx::PxVec3 centro, float radio) :ForceGenerator(INT_MAX), velocidad(velocidad), k1(k1), k2(k2), centro(centro), radio(radio) {
 
-};
-physx::PxVec3 WindForceGenerator::calculateForce(Particle* p) {
-    if ((p->getPosition() - centro).magnitude() <= radio) {
-        calculateVel(p);
-        return k1 * (velocidad - p->getVelocity()) + k2 * (velocidad - p->getVelocity()).magnitude() * (velocidad - p->getVelocity());
+WindForceGenerator::WindForceGenerator(const Vector3& windVelocity, float k1, float k2, Vector3 center, float radius) :
+    ForceGenerator(INT_MAX), windVelocity(windVelocity), k1(k1), k2(k2), center(center), radius(radius) {};
+
+Vector3 WindForceGenerator::calculateForce(Particle* particle) {
+    if ((particle->getPosition() - center).magnitude() <= radius) {
+        calculateVelocity(particle);
+        return k1 * (windVelocity - particle->getVelocity()) + k2 * (windVelocity - particle->getVelocity()).magnitude() * (windVelocity - particle->getVelocity());
     }
-    return physx::PxVec3(0, 0, 0);
+    return Vector3(0, 0, 0);
 }

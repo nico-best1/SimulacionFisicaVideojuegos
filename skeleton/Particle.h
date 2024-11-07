@@ -1,5 +1,6 @@
 #pragma once
 #include <PxPhysicsAPI.h>
+#include <cstdlib>   
 #include "RenderUtils.hpp"
 
 using namespace physx;
@@ -12,11 +13,12 @@ protected:
 	RenderItem* renderItem;
 	double damping;
 	double lifetime;
-	double mass = 0.1;
+	double mass;
 	Vector3 accumulatedForce =Vector3(0,0,0);
 public:
 	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_) 
 		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_){
+		mass = static_cast<double>(rand()) / RAND_MAX * 50;
 		pose = physx::PxTransform(Pos);
 		PxShape*  shape = CreateShape(physx::PxSphereGeometry(1));
 		renderItem = new RenderItem(shape, &pose, physx::PxVec4(1, 1, 1, 1));
@@ -54,7 +56,7 @@ public:
 
 	double getMass() { return mass; }
 
-	void setForce(physx::PxVec3 newforce) {
+	void setForce(Vector3 newforce) {
 		accumulatedForce = newforce;
 	}
 };

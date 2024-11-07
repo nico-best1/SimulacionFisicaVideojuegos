@@ -3,13 +3,13 @@
 #include "ForceGenerator.h"
 class ExplosionForceGenerator : public ForceGenerator
 {
-public:
-	ExplosionForceGenerator(const physx::PxVec3& centro, float radio, float k, float ct);
-	physx::PxVec3 calculateForce(Particle* p) override;
-	virtual ~ExplosionForceGenerator() {};
-	void caldulateDistance(Particle* p);
-	virtual void update(double t, ParticleSystem* prSys);
 private:
-	physx::PxVec3 centro;
-	float radio, k, ct, d;
+	Vector3 explosionCenter;
+	float explosionRadius, forceConstant, decayTime, distance;
+public:
+	ExplosionForceGenerator(const Vector3& explosionCenter, float explosionRadius, float forceConstant, float decayTime);
+	virtual ~ExplosionForceGenerator() {};
+	void calculateDistance(Particle* particle);
+	Vector3 calculateForce(Particle* particle) override;
+	virtual void update(double deltaTime, ParticleSystem* particleSystem);
 };

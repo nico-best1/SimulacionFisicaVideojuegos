@@ -175,8 +175,8 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch (toupper(key))
 	{
 	case 'E': 
-		particleSystem->setExplosion(true);
-		particleSystem->addForceGenerator(new ExplosionForceGenerator(physx::PxVec3(0, 0, 0), 150.0f, 1000.0f, 0.5f));
+		particleSystem->ActiveExplosion(true);
+		particleSystem->addForceGenerator(new ExplosionForceGenerator(Vector3(0, 0, 0), 150.0f, 100000.0f, 1.0f));
 		break;
 	case 'U':
 	{
@@ -186,7 +186,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	}
 	case 'G':
-		//particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10);
+		//particleSystem->clearExplosionForceGenerators();
 		break;
 	default:
 		break;

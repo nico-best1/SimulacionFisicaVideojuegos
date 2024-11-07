@@ -2,10 +2,10 @@
 #include "ForceGenerator.h"
 class GravitationalForceGenerator : public ForceGenerator
 {
-public:
-	GravitationalForceGenerator(const physx::PxVec3& gravity);
-	physx::PxVec3 calculateForce(Particle* p) override;
-	virtual ~GravitationalForceGenerator() {};
 private:
-	physx::PxVec3 gravity;
+	Vector3 gravity;
+public:
+	GravitationalForceGenerator(const Vector3& gravity);
+	virtual ~GravitationalForceGenerator() {};
+	Vector3 calculateForce(Particle* p) override;
 };

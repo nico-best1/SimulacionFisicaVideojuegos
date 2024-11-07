@@ -3,19 +3,20 @@
 #include "RenderUtils.hpp"
 #include "ParticleGenerator.h"
 #include "ForceGenerator.h"
+#include "ExplosionForceGenerator.h"
 
 using namespace std;
 
 class ParticleSystem
 {
 private:
-	std::list<ForceGenerator*> forceGenerators;
+	list<ForceGenerator*> forceGenerators;
 	vector<ParticleGenerator*>generators;
 	bool activeExplosion;
 protected:
-	std::list<Particle*>particles;
+	list<Particle*>particles;
 public:
-	ParticleSystem() { activeExplosion = false; }
+	ParticleSystem() : activeExplosion(false) {}
 
 	void addGenerator(Vector3 pos, DistributionType distributionType, int dipersion_area_x_, int dipersion_area_y_, double particleLifetime) {
 		generators.push_back(new ParticleGenerator(pos, distributionType, dipersion_area_x_, dipersion_area_y_, particleLifetime));
@@ -57,7 +58,7 @@ public:
 		}
 	}
 
-	void ParticleSystem::applyForces(Particle* p) {
+	void applyForces(Particle* p) {
 		physx::PxVec3 totalForce(0, 0, 0);
 		auto it = forceGenerators.begin();
 		while (it != forceGenerators.end()) {
@@ -75,5 +76,18 @@ public:
 		p->setForce(totalForce);
 	}
 
-	void setExplosion(bool active) { activeExplosion = active; };
+	void ActiveExplosion(bool active) { activeExplosion = active; };
+
+	void clearExplosionForceGenerators() {
+		for (auto it = forceGenerators.begin(); it != forceGenerators.end(); ) {
+			if (dynamic_cast<ExplosionForceGenerator*>(*it) != nullptr) {
+				delete* it;
+				it = forceGenerators.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
+
 };

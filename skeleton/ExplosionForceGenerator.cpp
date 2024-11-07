@@ -1,31 +1,36 @@
 #include "ExplosionForceGenerator.h"
 #include "ParticleSystem.h"
-ExplosionForceGenerator::ExplosionForceGenerator(const physx::PxVec3& centro, float radio, float k, float ct) :
-	ForceGenerator(ct * 4),
-	centro(centro), radio(radio), k(k), ct(ct), d(0) {
+
+ExplosionForceGenerator::ExplosionForceGenerator(const physx::PxVec3& explosionCenter, float explosionRadius, float forceConstant, float decayTime) :
+	ForceGenerator(decayTime * 4),
+	explosionCenter(explosionCenter), explosionRadius(explosionRadius), forceConstant(forceConstant), decayTime(decayTime), distance(0) {
 
 }
 
-void ExplosionForceGenerator::update(double t, ParticleSystem* prSys) {
-	duration -= t;
+void ExplosionForceGenerator::update(double deltaTime, ParticleSystem* particleSystem) {
+	duration -= deltaTime;
 	if (duration < 0) {
 		alive = false;
-		prSys->setExplosion(false);
+		particleSystem->ActiveExplosion(false);
 	}
 }
 
-physx::PxVec3 ExplosionForceGenerator::calculateForce(Particle* p) {
-
-	if (d < radio) {
-		caldulateDistance(p);
-		physx::PxVec3 forceExplosion = (k / pow(d, 2)) * physx::PxVec3(p->getPosition().x - centro.x, p->getPosition().y - centro.y, p->getPosition().z - centro.z) * std::exp(-duration / ct);
-		return forceExplosion;
-	}
-	else
-		return physx::PxVec3(0, 0, 0);
+void ExplosionForceGenerator::calculateDistance(Particle* particle) {
+	distance = sqrt(pow(particle->getPosition().x - explosionCenter.x, 2) + pow(particle->getPosition().y - explosionCenter.y, 2) + pow(particle->getPosition().z - explosionCenter.z, 2));
 }
-void ExplosionForceGenerator::caldulateDistance(Particle* p) {
-	d = sqrt(pow(p->getPosition().x - centro.x, 2) +
-		pow(p->getPosition().y - centro.y, 2) +
-		pow(p->getPosition().z - centro.z, 2));
+
+Vector3 ExplosionForceGenerator::calculateForce(Particle* particle) {
+
+	if (distance < explosionRadius) {
+		calculateDistance(particle);
+		Vector3 explosionForce = (forceConstant / pow(distance, 2)) *
+			Vector3(particle->getPosition().x - explosionCenter.x,
+				particle->getPosition().y - explosionCenter.y,
+				particle->getPosition().z - explosionCenter.z)
+			* std::exp(-duration / decayTime);
+		return explosionForce;
+	}
+	else {
+		return Vector3(0, 0, 0);
+	}
 }
