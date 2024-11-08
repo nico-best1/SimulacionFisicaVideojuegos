@@ -101,17 +101,19 @@ void renderCallback()
 	for (auto it = gRenderItems.begin(); it != gRenderItems.end(); ++it)
 	{
 		const RenderItem* obj = (*it);
-		auto objTransform = obj->transform;
-		if (!objTransform)
-		{
-			auto actor = obj->actor;
-			if (actor)
+		if (obj != nullptr && obj->color.w >= 0.1 && obj->color.x <= 1) {
+			auto objTransform = obj->transform;
+			if (!objTransform)
 			{
-				renderShape(*obj->shape, actor->getGlobalPose(), obj->color);
-				continue;
+				auto actor = obj->actor;
+				if (actor)
+				{
+					renderShape(*obj->shape, actor->getGlobalPose(), obj->color);
+					continue;
+				}
 			}
+			renderShape(*obj->shape, objTransform ? *objTransform : physx::PxTransform(PxIdentity), obj->color);
 		}
-		renderShape(*obj->shape, objTransform ? *objTransform : physx::PxTransform(PxIdentity), obj->color);
 	}
 
 	//PxScene* scene;
