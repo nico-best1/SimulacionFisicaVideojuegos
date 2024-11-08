@@ -7,5 +7,5 @@ private:
 public:
 	GravitationalForceGenerator(const Vector3& gravity);
 	virtual ~GravitationalForceGenerator() {};
-	Vector3 calculateForce(Particle* p) override;
+	Vector3 newForce(Particle* p) override;
 };

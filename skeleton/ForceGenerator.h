@@ -7,7 +7,7 @@ protected:
     bool alive;
 public:
     ForceGenerator(float duration) : duration(duration), alive(true) {};
-    virtual Vector3 calculateForce(Particle* p) = 0;
+    virtual Vector3 newForce(Particle* p) = 0;
     virtual ~ForceGenerator() {}
     bool isAlive() { return alive; };
     virtual void update(double t, ParticleSystem* pS) {};

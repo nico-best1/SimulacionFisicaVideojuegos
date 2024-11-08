@@ -103,9 +103,9 @@ void initPhysics(bool interactive)
 	particleSystem = new ParticleSystem();
 	particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10);
 	//Gravedad
-	//particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
+	particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
 	//Viento
-	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, 0, 0), 50));
+	particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
 	//Torbellino
 	//particleSystem->addForceGenerator(new TorbellinoForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, 0, 0), 50, 10));
 }

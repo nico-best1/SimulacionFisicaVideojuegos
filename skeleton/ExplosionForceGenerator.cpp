@@ -15,14 +15,11 @@ void ExplosionForceGenerator::update(double deltaTime, ParticleSystem* particleS
 	}
 }
 
-void ExplosionForceGenerator::calculateDistance(Particle* particle) {
-	distance = sqrt(pow(particle->getPosition().x - explosionCenter.x, 2) + pow(particle->getPosition().y - explosionCenter.y, 2) + pow(particle->getPosition().z - explosionCenter.z, 2));
-}
 
-Vector3 ExplosionForceGenerator::calculateForce(Particle* particle) {
+Vector3 ExplosionForceGenerator::newForce(Particle* particle) {
 
 	if (distance < explosionRadius) {
-		calculateDistance(particle);
+		distance = sqrt(pow(particle->getPosition().x - explosionCenter.x, 2) + pow(particle->getPosition().y - explosionCenter.y, 2) + pow(particle->getPosition().z - explosionCenter.z, 2));
 		Vector3 explosionForce = (forceConstant / pow(distance, 2)) *
 			Vector3(particle->getPosition().x - explosionCenter.x,
 				particle->getPosition().y - explosionCenter.y,

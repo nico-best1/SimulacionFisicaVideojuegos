@@ -63,7 +63,7 @@ public:
 		auto it = forceGenerators.begin();
 		while (it != forceGenerators.end()) {
 			if ((*it)->isAlive()) {
-				totalForce += (*it)->calculateForce(p);
+				totalForce += (*it)->newForce(p);
 				++it;
 			}
 			else {
