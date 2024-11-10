@@ -17,6 +17,7 @@
 #include "TorbellinoForceGenerator.h"
 #include "ExplosionForceGenerator.h"
 #include "ForceGenerator.h"
+#include "SpringForceGenerator.h"
 
 #include <iostream>
 
@@ -50,6 +51,7 @@ RenderItem* origen;
 Particle* particle;
 std::vector<Proyectile*> projectiles;
 ParticleSystem* particleSystem;
+SpringForceGenerator* springGenerator = nullptr;
 
 
 
@@ -100,12 +102,20 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 	initExex();
+
+	Vector3D anchorPosition = Vector3D(0, 0, 0); // Cambia según sea necesario
+	physx::PxBoxGeometry box = PxBoxGeometry(0.5, 0.5, 0.5);
+	physx::PxShape* anchorShape = CreateShape(box);
+	physx::PxTransform* anchorTransform = new PxTransform(anchorPosition.x, anchorPosition.y, anchorPosition.z);
+	RenderItem* anchorRender = new RenderItem(anchorShape, anchorTransform, physx::PxVec4(1, 0, 0, 1));
+
+
 	particleSystem = new ParticleSystem();
 	particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10);
 	//Gravedad
-	particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
+	//particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
 	//Viento
-	particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
+	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
 	//Torbellino
 	//particleSystem->addForceGenerator(new TorbellinoForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, 0, 0), 50, 10));
 }
@@ -174,11 +184,29 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch (toupper(key))
 	{
-	case 'E': 
-		particleSystem->ActiveExplosion(true);
-		particleSystem->addForceGenerator(new ExplosionForceGenerator(Vector3(0, 0, 0), 150.0f, 100000.0f, 1.0f));
+	case 'J': 
+		if (!springGenerator) {
+			Vector3 anchor = Vector3(0, 0, 0);  
+			float k = 300.0f;                  
+			float restLength = 5.0f;            
+
+			springGenerator = new SpringForceGenerator(anchor, k, restLength);
+
+			particleSystem->addForceGenerator(springGenerator);
+		}
 		break;
-	case 'U':
+
+	case 'U': 
+		if (springGenerator != nullptr) {
+			float newK = 500.0f;  
+			springGenerator->setKConstant(newK);
+		}
+		break;
+	case 'E': 
+		/*particleSystem->ActiveExplosion(true);
+		particleSystem->addForceGenerator(new ExplosionForceGenerator(Vector3(0, 0, 0), 150.0f, 100000.0f, 1.0f));*/
+		break;
+	case 'O':
 	{
 		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
