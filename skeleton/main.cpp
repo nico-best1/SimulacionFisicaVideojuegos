@@ -18,6 +18,7 @@
 #include "ExplosionForceGenerator.h"
 #include "ForceGenerator.h"
 #include "SpringForceGenerator.h"
+#include "TemporaryForceGenerator.h"
 
 #include <iostream>
 
@@ -40,8 +41,6 @@ PxPvd*                  gPvd        = NULL;
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
-
-double simulationTime = 0.0; // Tiempo de simulación en segundos
 
 //Item list
 RenderItem* ejex;
@@ -76,6 +75,14 @@ void initExex() {
 	ejez = new RenderItem(shape1, trans_z, physx::PxVec4(0, 0, 1, 1));
 }
 
+void CreateCube() {
+	Vector3D anchorPosition = Vector3D(0, 0, 0);
+	physx::PxBoxGeometry box = PxBoxGeometry(0.5, 0.5, 0.5);
+	physx::PxShape* anchorShape = CreateShape(box);
+	physx::PxTransform* anchorTransform = new PxTransform(anchorPosition.x, anchorPosition.y, anchorPosition.z);
+	RenderItem* anchorRender = new RenderItem(anchorShape, anchorTransform, physx::PxVec4(1, 0, 0, 1));
+}
+
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -101,19 +108,12 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	initExex();
-
-	Vector3D anchorPosition = Vector3D(0, 0, 0); // Cambia según sea necesario
-	physx::PxBoxGeometry box = PxBoxGeometry(0.5, 0.5, 0.5);
-	physx::PxShape* anchorShape = CreateShape(box);
-	physx::PxTransform* anchorTransform = new PxTransform(anchorPosition.x, anchorPosition.y, anchorPosition.z);
-	RenderItem* anchorRender = new RenderItem(anchorShape, anchorTransform, physx::PxVec4(1, 0, 0, 1));
-
+	//initExex();
 
 	particleSystem = new ParticleSystem();
-	particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10);
+	particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10, true);
 	//Gravedad
-	//particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
+	particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
 	//Viento
 	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
 	//Torbellino
@@ -128,8 +128,6 @@ void initPhysics(bool interactive)
 void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
-
-	simulationTime += t;
 
 	// Integrar cada proyectil en la lista
 	for (auto it = projectiles.begin(); it != projectiles.end(); ) {
@@ -150,10 +148,10 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	DeregisterRenderItem(ejex);
-	DeregisterRenderItem(ejey);
-	DeregisterRenderItem(ejez);
-	DeregisterRenderItem(origen);
+	///*DeregisterRenderItem(ejex);
+	//DeregisterRenderItem(ejey);
+	//DeregisterRenderItem(ejez);*/
+	//DeregisterRenderItem(origen);
 	for (auto proj : projectiles) {
 		delete proj;
 	}
@@ -185,6 +183,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch (toupper(key))
 	{
 	case 'J': 
+		CreateCube();
 		if (!springGenerator) {
 			Vector3 anchor = Vector3(0, 0, 0);  
 			float k = 300.0f;                  
@@ -198,16 +197,19 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	case 'U': 
 		if (springGenerator != nullptr) {
-			float newK = 500.0f;  
-			springGenerator->setKConstant(newK);
+			springGenerator->AddKConstant(100);
 		}
 		break;
 	case 'E': 
+		if (springGenerator != nullptr) {
+			springGenerator->SubKConstant(100);
+		}
 		/*particleSystem->ActiveExplosion(true);
 		particleSystem->addForceGenerator(new ExplosionForceGenerator(Vector3(0, 0, 0), 150.0f, 100000.0f, 1.0f));*/
 		break;
 	case 'O':
 	{
+		particleSystem->addForceGenerator(new TemporaryForceGenerator(Vector3(5000,0,0), 1.0f));
 		/*double real_velocity = 100.0;
 		double simulated_velocity = 50.0;
 		shootProyectile(GetCamera()->getTransform().p, GetCamera()->getDir() * simulated_velocity, real_velocity, simulated_velocity);*/

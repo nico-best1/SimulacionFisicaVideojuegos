@@ -7,87 +7,87 @@
 
 using namespace std;
 
-class ParticleSystem
-{
+class ParticleSystem {
 private:
-	list<ForceGenerator*> forceGenerators;
-	vector<ParticleGenerator*>generators;
-	bool activeExplosion;
+    list<ForceGenerator*> forceGenerators;
+    vector<ParticleGenerator*> generators;
+    bool activeExplosion;
+
 protected:
-	list<Particle*>particles;
+    list<Particle*> particles;
+
 public:
-	ParticleSystem() : activeExplosion(false) {}
+    ParticleSystem() : activeExplosion(false) {}
 
-	void addGenerator(Vector3 pos, DistributionType distributionType, int dipersion_area_x_, int dipersion_area_y_, double particleLifetime) {
-		generators.push_back(new ParticleGenerator(pos, distributionType, dipersion_area_x_, dipersion_area_y_, particleLifetime));
-	}
+    void addGenerator(Vector3 pos, DistributionType distributionType, int dispersion_area_x_, int dispersion_area_y_, double particleLifetime, bool SingleparticleGenerator) {
+        generators.push_back(new ParticleGenerator(pos, distributionType, dispersion_area_x_, dispersion_area_y_, particleLifetime, SingleparticleGenerator));
+    }
 
-	void addForceGenerator(ForceGenerator* fg) {
-		forceGenerators.push_back(fg);
-	}
+    void addForceGenerator(ForceGenerator* fg) {
+        forceGenerators.push_back(fg);
+    }
 
-	void addParticle(Vector3 InitialPosition, int velocityX, int velocityY, int velocityZ, double Damping, int lifetime_) {
-		particles.push_back(new Particle(InitialPosition, Vector3(velocityX, velocityY, velocityZ), Vector3(0, 0, 0), Damping, lifetime_));
-	}
+    void addParticle(Vector3 InitialPosition, int velocityX, int velocityY, int velocityZ, double Damping, int lifetime_) {
+        particles.push_back(new Particle(InitialPosition, Vector3(velocityX, velocityY, velocityZ), Vector3(0, 0, 0), Damping, lifetime_));
+    }
 
-	std::list<Particle*> getParticles() { return particles; }
+    void addSingleParticle(Vector3 InitialPosition, int velocityX, int velocityY, int velocityZ, double Damping, int lifetime_, double mass_) {
+        particles.push_back(new Particle(InitialPosition, Vector3(velocityX, velocityY, velocityZ), Vector3(0, 0, 0), Damping, lifetime_, mass_));
+    }
 
-	void update(double t) {
-		if (!activeExplosion) {
-			for (auto g : generators) {
-				g->update(this, t);
-			}
-		}
+    std::list<Particle*> getParticles() { return particles; }
 
-		for (auto it = particles.begin(); it != particles.end(); ) {
-			for (auto& fg : forceGenerators) {
-				fg->update(t, this);
-			}
-			applyForces(*it);
-			(*it)->integrate(t);
-			if ((*it)->isDead() || (*it)->isOutOfBounds(100, 300)) {
-				auto aux = it;
-				++it;
-				delete (*aux);
-				particles.erase(aux);
-			}
-			else {
-				++it;
-			}
+    void update(double t) {
+        for (auto it = forceGenerators.begin(); it != forceGenerators.end(); ) {
+            (*it)->update(t, this);
+            if (!(*it)->isAlive()) {
+                delete* it;
+                it = forceGenerators.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
 
-		}
-	}
+        if (!activeExplosion) {
+            for (auto g : generators) {
+                g->update(this, t);
+            }
+        }
 
-	void applyForces(Particle* p) {
-		physx::PxVec3 totalForce(0, 0, 0);
-		auto it = forceGenerators.begin();
-		while (it != forceGenerators.end()) {
-			if ((*it)->isAlive()) {
-				totalForce += (*it)->newForce(p);
-				++it;
-			}
-			else {
-				auto aux = it;
-				++it;
-				delete* aux;
-				forceGenerators.erase(aux);
-			}
-		}
-		p->setForce(totalForce);
-	}
+        for (auto it = particles.begin(); it != particles.end(); ) {
+            applyForces(*it);
+            (*it)->integrate(t);
 
-	void ActiveExplosion(bool active) { activeExplosion = active; };
+            if ((*it)->isDead() || (*it)->isOutOfBounds(100, 300)) {
+                delete* it;
+                it = particles.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+    }
 
-	void clearExplosionForceGenerators() {
-		for (auto it = forceGenerators.begin(); it != forceGenerators.end(); ) {
-			if (dynamic_cast<ExplosionForceGenerator*>(*it) != nullptr) {
-				delete* it;
-				it = forceGenerators.erase(it);
-			}
-			else {
-				++it;
-			}
-		}
-	}
+    void applyForces(Particle* p) {
+        Vector3 totalForce(0, 0, 0);
+        for (auto& fg : forceGenerators) {
+            totalForce += fg->newForce(p);
+        }
+        p->setForce(totalForce);
+    }
 
+    void ActiveExplosion(bool active) { activeExplosion = active; }
+
+    void clearExplosionForceGenerators() {
+        for (auto it = forceGenerators.begin(); it != forceGenerators.end(); ) {
+            if (dynamic_cast<ExplosionForceGenerator*>(*it) != nullptr) {
+                delete* it;
+                it = forceGenerators.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+    }
 };

@@ -4,6 +4,9 @@
 
 void ParticleGenerator::update(ParticleSystem* ps, double t)
 {
+
+    if (generateSingleParticle && singleParticleGenerated) return;
+
     float velocityX, velocityY, velocityZ;
     if (distributionType == DistributionType::Gaussian) {
         velocityX = generateGaussian(0.0, 2);
@@ -16,8 +19,13 @@ void ParticleGenerator::update(ParticleSystem* ps, double t)
         velocityZ = generateUniform(-10.0, 10.0);
     }
 
-
-    ps->addParticle(initialPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime);
+    if (generateSingleParticle) {
+        ps->addSingleParticle(initialPosition, velocityX, velocityY, velocityZ, 0.98, 100, 50);
+        singleParticleGenerated = true;
+    }
+    else {
+        ps->addParticle(initialPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime);
+    }
 }
 
 

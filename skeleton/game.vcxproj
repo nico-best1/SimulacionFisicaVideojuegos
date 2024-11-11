@@ -283,6 +283,7 @@
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="SpringForceGenerator.h" />
+    <ClInclude Include="TemporaryForceGenerator.h" />
     <ClInclude Include="TorbellinoForceGenerator.h" />
     <ClInclude Include="WindForceGenerator.h" />
   </ItemGroup>

@@ -24,4 +24,7 @@ public:
 
 
     void setKConstant(float newK) { k = newK; } 
+
+    void AddKConstant(float newK) { k += newK; } 
+    void SubKConstant(float newK) { k -= newK; } 
 };

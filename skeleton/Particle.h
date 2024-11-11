@@ -25,6 +25,14 @@ public:
 		RegisterRenderItem(renderItem);
 	}
 
+	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_, int mass_)
+		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_), mass(mass_) {
+		pose = physx::PxTransform(Pos);
+		PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
+		renderItem = new RenderItem(shape, &pose, physx::PxVec4(1, 1, 1, 1));
+		RegisterRenderItem(renderItem);
+	}
+
 	~Particle() {
 		DeregisterRenderItem(renderItem);	
 	};

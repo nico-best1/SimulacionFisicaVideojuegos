@@ -41,6 +41,7 @@
     <ClInclude Include="TorbellinoForceGenerator.h" />
     <ClInclude Include="ExplosionForceGenerator.h" />
     <ClInclude Include="SpringForceGenerator.h" />
+    <ClInclude Include="TemporaryForceGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
