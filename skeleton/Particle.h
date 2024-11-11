@@ -63,6 +63,7 @@ public:
 	}
 
 	double getMass() { return mass; }
+	double setMass(float increment_mass) {  mass += increment_mass; }
 
 	void setForce(Vector3 newforce) {
 		accumulatedForce = newforce;

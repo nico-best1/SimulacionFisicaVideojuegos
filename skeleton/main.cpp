@@ -19,6 +19,7 @@
 #include "ForceGenerator.h"
 #include "SpringForceGenerator.h"
 #include "TemporaryForceGenerator.h"
+#include "FloatationForceGenerator.h"
 
 #include <iostream>
 
@@ -53,6 +54,7 @@ Particle* particleB;
 std::vector<Proyectile*> projectiles;
 ParticleSystem* particleSystem;
 SpringForceGenerator* springGenerator = nullptr;
+FloatationForceGenerator* floatationForceGenerator = nullptr;
 
 
 
@@ -85,6 +87,21 @@ void CreateCube() {
 	RenderItem* anchorRender = new RenderItem(anchorShape, anchorTransform, physx::PxVec4(1, 0, 0, 1));
 }
 
+void CreateWaterSurface(float waterLevel) {
+	physx::PxBoxGeometry waterBox = PxBoxGeometry(10.0f, 0.1f, 10.0f); 
+	physx::PxShape* waterShape = CreateShape(waterBox);
+	physx::PxTransform* waterTransform = new PxTransform(0.0f, waterLevel, 0.0f); 
+	RenderItem* waterSurface = new RenderItem(waterShape, waterTransform, physx::PxVec4(0, 0, 1, 0.5f));
+}
+
+void CreateFloatingObject(float objectHeight) {
+	particleA = new Particle(Vector3(0, objectHeight + 2.0f, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100.0f, 75.0f);
+	particleSystem->addParticle(particleA);
+
+	floatationForceGenerator = new FloatationForceGenerator(1.0f, 1.0f, objectHeight); 
+	particleSystem->addForceGenerator(floatationForceGenerator);
+}
+
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -111,17 +128,18 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 	//initExex();
-
-	particleA = new Particle(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
-	particleB = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
-
+	/*particleA = new Particle(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
+	particleB = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);*/
+	CreateWaterSurface(0.0f);
 	particleSystem = new ParticleSystem();
-	particleSystem->addParticle(particleA);  
-	particleSystem->addParticle(particleB); 
+	/*floatationForceGenerator = new FloatationForceGenerator(1.0f, 2.0f, 0.0f);
+	particleSystem->addForceGenerator(floatationForceGenerator);*/
+	/*particleSystem->addParticle(particleA);  
+	particleSystem->addParticle(particleB); */
 
 	//particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10, true);
 	//Gravedad
-	//particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
+	particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
 	//Viento
 	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
 	//Torbellino
@@ -226,6 +244,22 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case 'G':
 		particleSystem->addSpringForceBetweenParticles(particleA, particleB, 50.0f, 5.0f);
 		//particleSystem->clearExplosionForceGenerators();
+		break;
+	case 'F':  
+		if (!floatationForceGenerator) {
+			CreateFloatingObject(0.0f);
+		}
+		break;
+	case 'L':  
+		if (floatationForceGenerator) {
+			floatationForceGenerator->setVolume(0.1f);
+		}
+		break;
+
+	case 'K': 
+		if (floatationForceGenerator) {
+			floatationForceGenerator->setVolume(-0.1f);
+		}
 		break;
 	default:
 		break;
