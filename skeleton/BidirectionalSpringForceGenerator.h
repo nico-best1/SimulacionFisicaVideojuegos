@@ -17,18 +17,20 @@ public:
         Vector3 displacement = particle1->getPosition() - particle2->getPosition();
         float length = displacement.magnitude();
 
-        if (p == particle1) {
-            if (length > restLength) {
-                Vector3 force = displacement;
-                force *= -k * (length - restLength) / length;
-                return force;
+        if (length > restLength) {
+            if (p == particle1) {
+                if (length > restLength) {
+                    Vector3 force = displacement;
+                    force *= -k * (length - restLength) / length;
+                    return force;
+                }
             }
-        }
-        else if (p == particle2) {
-            if (length > restLength) {
-                Vector3 force = displacement;
-                force *= k * (length - restLength) / length;
-                return force;
+            else if (p == particle2) {
+                if (length > restLength) {
+                    Vector3 force = displacement;
+                    force *= k * (length - restLength) / length;
+                    return force;
+                }
             }
         }
         return Vector3(0, 0, 0);
