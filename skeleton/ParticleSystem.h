@@ -4,6 +4,7 @@
 #include "ParticleGenerator.h"
 #include "ForceGenerator.h"
 #include "ExplosionForceGenerator.h"
+#include "BidirectionalSpringForceGenerator.h"
 
 using namespace std;
 
@@ -27,8 +28,16 @@ public:
         forceGenerators.push_back(fg);
     }
 
+    void addSpringForceBetweenParticles(Particle* p1, Particle* p2, float k, float restLength) {
+        forceGenerators.push_back(new BidirectionalSpringForceGenerator(p1, p2, k, restLength));
+    }
+
     void addParticle(Vector3 InitialPosition, int velocityX, int velocityY, int velocityZ, double Damping, int lifetime_) {
         particles.push_back(new Particle(InitialPosition, Vector3(velocityX, velocityY, velocityZ), Vector3(0, 0, 0), Damping, lifetime_));
+    }
+
+    void addParticle(Particle* p) {
+        particles.push_back(p);
     }
 
     void addSingleParticle(Vector3 InitialPosition, int velocityX, int velocityY, int velocityZ, double Damping, int lifetime_, double mass_) {

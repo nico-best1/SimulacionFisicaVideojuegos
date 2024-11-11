@@ -48,6 +48,8 @@ RenderItem* ejey;
 RenderItem* ejez;
 RenderItem* origen;
 Particle* particle;
+Particle* particleA;
+Particle* particleB;
 std::vector<Proyectile*> projectiles;
 ParticleSystem* particleSystem;
 SpringForceGenerator* springGenerator = nullptr;
@@ -110,10 +112,16 @@ void initPhysics(bool interactive)
 
 	//initExex();
 
+	particleA = new Particle(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
+	particleB = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
+
 	particleSystem = new ParticleSystem();
-	particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10, true);
+	particleSystem->addParticle(particleA);  
+	particleSystem->addParticle(particleB); 
+
+	//particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10, true);
 	//Gravedad
-	particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
+	//particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
 	//Viento
 	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
 	//Torbellino
@@ -216,6 +224,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	}
 	case 'G':
+		particleSystem->addSpringForceBetweenParticles(particleA, particleB, 50.0f, 5.0f);
 		//particleSystem->clearExplosionForceGenerators();
 		break;
 	default:
