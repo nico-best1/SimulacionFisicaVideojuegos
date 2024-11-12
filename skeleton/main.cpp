@@ -88,10 +88,16 @@ void CreateCube() {
 }
 
 void CreateWaterSurface(float waterLevel) {
-	physx::PxBoxGeometry waterBox = PxBoxGeometry(10.0f, 0.1f, 10.0f); 
+	physx::PxBoxGeometry waterBox = PxBoxGeometry(10.0f, 0.1f, 10.0f);
 	physx::PxShape* waterShape = CreateShape(waterBox);
-	physx::PxTransform* waterTransform = new PxTransform(0.0f, waterLevel, 0.0f); 
+	physx::PxTransform* waterTransform = new PxTransform(0.0f, waterLevel, 0.0f);
 	RenderItem* waterSurface = new RenderItem(waterShape, waterTransform, physx::PxVec4(0, 0, 1, 0.5f));
+
+	/*float boxHeight = 5.0f;  
+	physx::PxBoxGeometry containerBox = PxBoxGeometry(10.0f, boxHeight, 10.0f); 
+	physx::PxShape* containerShape = CreateShape(containerBox);
+	physx::PxTransform* containerTransform = new PxTransform(0.0f, waterLevel - boxHeight, 0.0f); 
+	RenderItem* container = new RenderItem(containerShape, containerTransform, physx::PxVec4(1, 0, 0, 0.1f)); */
 }
 
 void CreateFloatingObject(float objectHeight) {
