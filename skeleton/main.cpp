@@ -20,6 +20,7 @@
 #include "SpringForceGenerator.h"
 #include "TemporaryForceGenerator.h"
 #include "FloatationForceGenerator.h"
+#include "SolidRigid.h"
 
 #include <iostream>
 
@@ -55,6 +56,8 @@ std::vector<Proyectile*> projectiles;
 ParticleSystem* particleSystem;
 SpringForceGenerator* springGenerator = nullptr;
 FloatationForceGenerator* floatationForceGenerator = nullptr;
+
+SolidRigid* cube;
 
 
 
@@ -133,11 +136,18 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
+	physx::PxBoxGeometry boxGeometry(20.0f, 20.0f, 20.0f);
+	physx::PxTransform boxTransform(PxVec3(0.0f, 10.0f, 0.0f)); 
+	physx::PxVec3 linearVelocity(0.0f, 0.0f, 0.0f); 
+	physx::PxVec3 angularVelocity(0.0f, 1.0f, 0.0f); 
+	float boxMass = 10.0f; 
+
+	cube = new SolidRigid(gScene,&boxGeometry, boxTransform, linearVelocity, angularVelocity, boxMass, gMaterial);
 	//initExex();
 	/*particleA = new Particle(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
 	particleB = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);*/
-	CreateWaterSurface(0.0f);
-	particleSystem = new ParticleSystem();
+	/*CreateWaterSurface(0.0f);
+	particleSystem = new ParticleSystem();*/
 	/*floatationForceGenerator = new FloatationForceGenerator(1.0f, 2.0f, 0.0f);
 	particleSystem->addForceGenerator(floatationForceGenerator);*/
 	/*particleSystem->addParticle(particleA);  
@@ -145,7 +155,7 @@ void initPhysics(bool interactive)
 
 	//particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10, true);
 	//Gravedad
-	particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));
+	/*particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));*/
 	//Viento
 	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
 	//Torbellino
@@ -162,12 +172,12 @@ void stepPhysics(bool interactive, double t)
 	PX_UNUSED(interactive);
 
 	// Integrar cada proyectil en la lista
-	for (auto it = projectiles.begin(); it != projectiles.end(); ) {
-		(*it)->integrate(t);
-			++it;
-	}
+	//for (auto it = projectiles.begin(); it != projectiles.end(); ) {
+	//	(*it)->integrate(t);
+	//		++it;
+	//}
 
-	particleSystem->update(t);
+	/*particleSystem->update(t);*/
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
@@ -184,10 +194,10 @@ void cleanupPhysics(bool interactive)
 	//DeregisterRenderItem(ejey);
 	//DeregisterRenderItem(ejez);*/
 	//DeregisterRenderItem(origen);
-	for (auto proj : projectiles) {
+	/*for (auto proj : projectiles) {
 		delete proj;
 	}
-	projectiles.clear();
+	projectiles.clear();*/
 	
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();

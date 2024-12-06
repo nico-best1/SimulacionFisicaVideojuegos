@@ -265,6 +265,7 @@
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Render.cpp" />
+    <ClCompile Include="SolidRigid.cpp" />
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="TorbellinoForceGenerator.cpp" />
     <ClCompile Include="WindForceGenerator.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="RenderUtils.hpp" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Render.h" />
+    <ClInclude Include="SolidRigid.h" />
     <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="TemporaryForceGenerator.h" />
     <ClInclude Include="TorbellinoForceGenerator.h" />
