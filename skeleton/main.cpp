@@ -21,6 +21,8 @@
 #include "TemporaryForceGenerator.h"
 #include "FloatationForceGenerator.h"
 #include "SolidRigid.h"
+#include "SolidRigidGenerator.h"
+#include "SolidRigidSystem.h"
 
 #include <iostream>
 
@@ -54,6 +56,7 @@ Particle* particleA;
 Particle* particleB;
 std::vector<Proyectile*> projectiles;
 ParticleSystem* particleSystem;
+SolidRigidSystem* solidSystem;
 SpringForceGenerator* springGenerator = nullptr;
 FloatationForceGenerator* floatationForceGenerator = nullptr;
 
@@ -136,13 +139,25 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	physx::PxBoxGeometry boxGeometry(20.0f, 20.0f, 20.0f);
-	physx::PxTransform boxTransform(PxVec3(0.0f, 10.0f, 0.0f)); 
-	physx::PxVec3 linearVelocity(0.0f, 0.0f, 0.0f); 
-	physx::PxVec3 angularVelocity(0.0f, 1.0f, 0.0f); 
-	float boxMass = 10.0f; 
+	solidSystem = new SolidRigidSystem(gScene, gPhysics, gMaterial, 100);
 
-	cube = new SolidRigid(gScene,&boxGeometry, boxTransform, linearVelocity, angularVelocity, boxMass, gMaterial);
+	PxBoxGeometry* cubeGeometry = new PxBoxGeometry(1.0f, 1.0f, 1.0f);
+	PxSphereGeometry* sphereGeometry = new PxSphereGeometry(1.0f);
+
+	//SolidRigidGenerator* cubeGenerator = new SolidRigidGenerator(
+	//	cubeGeometry, gMaterial, 3, 10.0f, 20.0f, 0.0f, 10.0f, 0.0f, 5.0f,
+	//	-10.0f, 10.0f, 5.0f, 10.0f, -10.0f, 10.0f);
+	SolidRigidGenerator* cubeGenerator = new SolidRigidGenerator(
+		cubeGeometry, gMaterial, 3, 10.0f, 20.0f, 0.0f, 10.0f, 0.0f, 5.0f,
+		-10.0f, 10.0f, 5.0f, 10.0f, -10.0f, 10.0f);
+	SolidRigidGenerator* sphereGenerator = new SolidRigidGenerator(
+		sphereGeometry, gMaterial, 3, 5.0f, 10.0f, 0.0f, 7.0f, 0.0f, 3.0f,
+		-8.0f, 8.0f, 5.0f, 9.0f, -8.0f, 8.0f);
+	solidSystem->addGenerator(cubeGenerator);
+	solidSystem->addGenerator(sphereGenerator);
+
+
+	/*cube = new SolidRigid(gScene,&boxGeometry, boxTransform, linearVelocity, angularVelocity, boxMass, gMaterial);*/
 	//initExex();
 	/*particleA = new Particle(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
 	particleB = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);*/
@@ -178,6 +193,8 @@ void stepPhysics(bool interactive, double t)
 	//}
 
 	/*particleSystem->update(t);*/
+	solidSystem->update(t);
+
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);

@@ -21,6 +21,8 @@
     <ClCompile Include="ExplosionForceGenerator.cpp" />
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="SolidRigid.cpp" />
+    <ClCompile Include="SolidRigidSystem.cpp" />
+    <ClCompile Include="SolidRigidGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -46,6 +48,8 @@
     <ClInclude Include="BidirectionalSpringForceGenerator.h" />
     <ClInclude Include="FloatationForceGenerator.h" />
     <ClInclude Include="SolidRigid.h" />
+    <ClInclude Include="SolidRigidSystem.h" />
+    <ClInclude Include="SolidRigidGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
