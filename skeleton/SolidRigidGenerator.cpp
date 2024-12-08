@@ -9,6 +9,10 @@ void SolidRigidGenerator::generate(SolidRigidSystem* SRs) {
     physx::PxVec3 linVel(generateRandom(minVel, maxVel), generateRandom(minVel, maxVel), generateRandom(minVel, maxVel));
     physx::PxVec3 angVel(generateRandom(minAngVel, maxAngVel), generateRandom(minAngVel, maxAngVel), generateRandom(minAngVel, maxAngVel));
 
-    SRs->addSolid(geometryTemplate, transform, linVel, angVel, mass, material);
+    float elasticity = generateRandom(minElasticity, maxElasticity);
+    float friction = generateRandom(minFriction, maxFriction);
+
+    physx::PxMaterial* customMaterial = SRs->createMaterial(elasticity, friction);
+    SRs->addSolid(geometryTemplate, transform, linVel, angVel, mass, customMaterial);
     currentGenerated++;
 }

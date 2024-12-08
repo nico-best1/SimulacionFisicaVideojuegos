@@ -37,6 +37,10 @@ public:
         generators.clear();
     }
 
+    physx::PxMaterial* createMaterial(float elasticity, float friction) {
+        return physics->createMaterial(friction, friction, elasticity);
+    }
+
     void addSolid(physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material = nullptr) {
         if (solids.size() >= maxSolids) return;
 

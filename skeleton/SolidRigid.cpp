@@ -1,5 +1,5 @@
 #include "SolidRigid.h"
-SolidRigid::SolidRigid(physx::PxScene* sc, physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material) :scene(sc), pose(transform), lifeTime(3){
+SolidRigid::SolidRigid(physx::PxScene* sc, physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material) :scene(sc), pose(transform), lifeTime(20){
     solid = scene->getPhysics().createRigidDynamic(transform);
     solid->setLinearVelocity(linVel);
     solid->setAngularVelocity(angVel);

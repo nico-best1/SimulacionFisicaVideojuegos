@@ -139,23 +139,44 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
+	// Suelo
+	PxRigidStatic* floor = gPhysics->createRigidStatic(PxTransform{0,0,0});
+	PxShape* shape = CreateShape(PxBoxGeometry(100,0.1,100));
+	floor->attachShape(*shape);
+	gScene->addActor(*floor);
+	RenderItem* item = new RenderItem(shape, floor, {0.8,0.8, 0.8, 1});
+
 	solidSystem = new SolidRigidSystem(gScene, gPhysics, gMaterial, 100);
 
+
+	// Cubos y esferas
 	PxBoxGeometry* cubeGeometry = new PxBoxGeometry(1.0f, 1.0f, 1.0f);
 	PxSphereGeometry* sphereGeometry = new PxSphereGeometry(1.0f);
 
-	//SolidRigidGenerator* cubeGenerator = new SolidRigidGenerator(
-	//	cubeGeometry, gMaterial, 3, 10.0f, 20.0f, 0.0f, 10.0f, 0.0f, 5.0f,
-	//	-10.0f, 10.0f, 5.0f, 10.0f, -10.0f, 10.0f);
 	SolidRigidGenerator* cubeGenerator = new SolidRigidGenerator(
-		cubeGeometry, gMaterial, 3, 10.0f, 20.0f, 0.0f, 10.0f, 0.0f, 5.0f,
-		-10.0f, 10.0f, 5.0f, 10.0f, -10.0f, 10.0f);
+		cubeGeometry, 2, 
+		10.0f, 20.0f,    // Masa mínima y máxima
+		0.0f, 10.0f,     // Velocidad mínima y máxima
+		0.0f, 5.0f,      // Velocidad angular mínima y máxima
+		-10.0f, 10.0f,   // Rango de posición en X
+		5.0f, 10.0f,     // Rango de posición en Y
+		-10.0f, 10.0f,   // Rango de posición en Z
+		0.1f, 0.5f,      // Elasticidad mínima y máxima
+		0.3f, 0.8f       // Fricción mínima y máxima
+	);
 	SolidRigidGenerator* sphereGenerator = new SolidRigidGenerator(
-		sphereGeometry, gMaterial, 3, 5.0f, 10.0f, 0.0f, 7.0f, 0.0f, 3.0f,
-		-8.0f, 8.0f, 5.0f, 9.0f, -8.0f, 8.0f);
+		sphereGeometry, 2, 
+		5.0f, 10.0f,       // Masa mínima y máxima
+		0.0f, 7.0f,        // Velocidad mínima y máxima
+		0.0f, 3.0f,        // Velocidad angular mínima y máxima
+		-8.0f, 8.0f,       // Rango de posición en X
+		5.0f, 9.0f,        // Rango de posición en Y
+		-8.0f, 8.0f,       // Rango de posición en Z
+		0.2f, 0.6f,        // Elasticidad mínima y máxima
+		0.4f, 0.9f         // Fricción mínima y máxima
+	);
 	solidSystem->addGenerator(cubeGenerator);
 	solidSystem->addGenerator(sphereGenerator);
-
 
 	/*cube = new SolidRigid(gScene,&boxGeometry, boxTransform, linearVelocity, angularVelocity, boxMass, gMaterial);*/
 	//initExex();
