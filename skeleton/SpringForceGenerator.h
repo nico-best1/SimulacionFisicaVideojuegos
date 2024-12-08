@@ -22,6 +22,17 @@ public:
         return force;
     }
 
+    Vector3 newForceSolid(SolidRigid* sr) override {
+        Vector3 position = sr->getPose().p;
+        Vector3 displacement = position - anchor;
+        float length = displacement.magnitude();
+
+        Vector3 force = displacement;
+        force *= -k * (length - restLength) / length;
+
+        return force;
+    }
+
 
     void setKConstant(float newK) { k = newK; } 
 

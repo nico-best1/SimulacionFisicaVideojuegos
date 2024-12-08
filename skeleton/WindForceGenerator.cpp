@@ -10,3 +10,12 @@ Vector3 WindForceGenerator::newForce(Particle* particle) {
     }
     return Vector3(0, 0, 0);
 }
+
+Vector3 WindForceGenerator::newForceSolid(SolidRigid* p)
+{
+    if ((p->getSolid()->getGlobalPose().p - center).magnitude() <= radius) {
+        calculateVelocitySolid(p);
+        return k1 * (windVelocity - p->getSolid()->getLinearVelocity()) + k2 * (windVelocity - p->getSolid()->getLinearVelocity()).magnitude() * (windVelocity - p->getSolid()->getLinearVelocity());
+    }
+    return physx::PxVec3(0, 0, 0);
+}

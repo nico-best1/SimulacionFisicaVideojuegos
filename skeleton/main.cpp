@@ -23,6 +23,7 @@
 #include "SolidRigid.h"
 #include "SolidRigidGenerator.h"
 #include "SolidRigidSystem.h"
+#include "TorqueForceGenerator.h"
 
 #include <iostream>
 
@@ -150,10 +151,10 @@ void initPhysics(bool interactive)
 
 
 	// Cubos y esferas
-	PxBoxGeometry* cubeGeometry = new PxBoxGeometry(1.0f, 1.0f, 1.0f);
+	PxBoxGeometry* cubeGeometry = new PxBoxGeometry(10.0f, 1.0f, 1.0f);
 	PxSphereGeometry* sphereGeometry = new PxSphereGeometry(1.0f);
 
-	SolidRigidGenerator* cubeGenerator = new SolidRigidGenerator(
+	SolidRigidGenerator* prismaGenerator = new SolidRigidGenerator(
 		cubeGeometry, 2, 
 		10.0f, 20.0f,    // Masa mínima y máxima
 		0.0f, 10.0f,     // Velocidad mínima y máxima
@@ -175,8 +176,17 @@ void initPhysics(bool interactive)
 		0.2f, 0.6f,        // Elasticidad mínima y máxima
 		0.4f, 0.9f         // Fricción mínima y máxima
 	);
-	solidSystem->addGenerator(cubeGenerator);
+
+	solidSystem->addGenerator(prismaGenerator);
 	solidSystem->addGenerator(sphereGenerator);
+
+	/*solidSystem->addForceGenerator(new GravitationalForceGenerator(Vector3(0,-9.8,0)));*/
+	//physx::PxVec3 force(10.0f, 0.0f, 0.0f);
+	//physx::PxVec3 applicationPoint(2.0f, 0.0f, 0.0f); 
+
+	//TorqueForceGenerator* torqueGen = new TorqueForceGenerator(5.0f, force, applicationPoint);
+	//solidSystem->addForceGenerator(torqueGen);
+
 
 	/*cube = new SolidRigid(gScene,&boxGeometry, boxTransform, linearVelocity, angularVelocity, boxMass, gMaterial);*/
 	//initExex();
@@ -305,15 +315,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		}
 		break;
 	case 'L':  
-		if (floatationForceGenerator) {
-			floatationForceGenerator->setVolume(0.1f);
-		}
+		solidSystem->addForceGenerator(new GravitationalForceGenerator(Vector3(0, -9.8, 0)));
 		break;
 
 	case 'K': 
-		if (floatationForceGenerator) {
-			floatationForceGenerator->setVolume(-0.1f);
-		}
+		solidSystem->addForceGenerator(new GravitationalForceGenerator(Vector3(0, 9.8, 0)));
 		break;
 	default:
 		break;

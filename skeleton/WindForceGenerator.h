@@ -10,6 +10,8 @@ protected:
 public:
 	WindForceGenerator(const Vector3& windVelocity, float k1, float k2, Vector3 center, float radius);
 	virtual Vector3 newForce(Particle* particle);
+	virtual Vector3 newForceSolid(SolidRigid* p);
 	virtual ~WindForceGenerator() {};
 	virtual void calculateVelocity(Particle* particle) {};
+	virtual void calculateVelocitySolid(SolidRigid* sr) {};
 };

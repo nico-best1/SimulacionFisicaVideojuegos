@@ -8,4 +8,5 @@ public:
 	GravitationalForceGenerator(const Vector3& gravity);
 	virtual ~GravitationalForceGenerator() {};
 	Vector3 newForce(Particle* p) override;
+	Vector3 newForceSolid(SolidRigid* p) override;
 };

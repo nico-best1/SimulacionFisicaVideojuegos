@@ -7,5 +7,6 @@ private:
 public:
 	TorbellinoForceGenerator(const Vector3& velocidad, float k1, float k2, Vector3 centro, float radio, float intensity);
 	~TorbellinoForceGenerator() {};
+	void calculateVelocitySolid(SolidRigid* p) override;
 	void calculateVelocity(Particle* p) override;
 };

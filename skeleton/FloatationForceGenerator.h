@@ -33,6 +33,24 @@ public:
         return force;
     }
 
+    Vector3 newForceSolid(SolidRigid* sr) override {
+        float h = sr->getSolid()->getGlobalPose().p.y;
+
+        physx::PxVec3 f(0, 0, 0);
+        float inmersed = 0.0;
+        if (h - water_height > height * 0.5f) {
+            inmersed = 0.0f;
+        }
+        else if (water_height - h > height * 0.5f) {
+            inmersed = 1.0f;
+        }
+        else {
+            inmersed = (water_height - h) / height + 0.5f;
+        }
+        f.y = liquid_density * volume * inmersed;
+        return f;
+    }
+
     void setVolume(float increment_volume) { 
         if (volume > 0.1f) {
             volume += increment_volume;

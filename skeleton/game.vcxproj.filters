@@ -23,6 +23,7 @@
     <ClCompile Include="SolidRigid.cpp" />
     <ClCompile Include="SolidRigidSystem.cpp" />
     <ClCompile Include="SolidRigidGenerator.cpp" />
+    <ClCompile Include="TorqueForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="SolidRigid.h" />
     <ClInclude Include="SolidRigidSystem.h" />
     <ClInclude Include="SolidRigidGenerator.h" />
+    <ClInclude Include="TorqueForceGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

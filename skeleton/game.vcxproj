@@ -270,6 +270,7 @@
     <ClCompile Include="SolidRigidSystem.cpp" />
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="TorbellinoForceGenerator.cpp" />
+    <ClCompile Include="TorqueForceGenerator.cpp" />
     <ClCompile Include="WindForceGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +294,7 @@
     <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="TemporaryForceGenerator.h" />
     <ClInclude Include="TorbellinoForceGenerator.h" />
+    <ClInclude Include="TorqueForceGenerator.h" />
     <ClInclude Include="WindForceGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

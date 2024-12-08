@@ -6,3 +6,7 @@ GravitationalForceGenerator::GravitationalForceGenerator(const Vector3& gravity)
 Vector3 GravitationalForceGenerator::newForce(Particle* p) {
 	return gravity * p->getMass();
 }
+Vector3 GravitationalForceGenerator::newForceSolid(SolidRigid* p)
+{
+	return gravity * p->getSolid()->getMass();
+}
