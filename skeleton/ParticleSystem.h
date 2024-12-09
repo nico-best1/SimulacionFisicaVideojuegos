@@ -20,8 +20,8 @@ protected:
 public:
     ParticleSystem() : activeExplosion(false) {}
 
-    void addGenerator(Vector3 pos, DistributionType distributionType, int dispersion_area_x_, int dispersion_area_y_, double particleLifetime, bool SingleparticleGenerator) {
-        generators.push_back(new ParticleGenerator(pos, distributionType, dispersion_area_x_, dispersion_area_y_, particleLifetime, SingleparticleGenerator));
+    void addGenerator(Vector3 pos, DistributionType distributionType, int dispersion_area_x_, int dispersion_area_y_, double particleLifetime, bool SingleparticleGenerator, bool finiteparticles, int numMaxParticles) {
+        generators.push_back(new ParticleGenerator(pos, distributionType, dispersion_area_x_, dispersion_area_y_, particleLifetime, SingleparticleGenerator, finiteparticles, numMaxParticles));
     }
 
     void addForceGenerator(ForceGenerator* fg) {

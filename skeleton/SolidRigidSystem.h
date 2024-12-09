@@ -49,7 +49,7 @@ public:
 
         if (!material) material = defaultMaterial;
 
-        SolidRigid* newSolid = new SolidRigid(scene, geo, transform, linVel, angVel, mass, material);
+        SolidRigid* newSolid = new SolidRigid(scene, geo, transform, linVel, angVel, mass, material, {1,1,1,1});
         newSolid->setSolidInScene();
         solids.push_back(newSolid);
     }

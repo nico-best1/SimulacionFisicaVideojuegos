@@ -12,12 +12,18 @@ public:
 
     Vector3 newForce(Particle* p) override {
         if (timeRemaining > 0) return force;
-        else return Vector3(0, 0, 0);  
+        else {
+            alive = false;
+            return Vector3(0, 0, 0);
+        }
     }
 
     Vector3 newForceSolid(SolidRigid* sr) override {
         if (timeRemaining > 0) return force;
-        else return Vector3(0, 0, 0);
+        else {
+            alive = false;
+            return Vector3(0, 0, 0);
+        }
     }
 
     void update(double t, ParticleSystem* pS) override {

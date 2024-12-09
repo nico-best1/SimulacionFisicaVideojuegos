@@ -23,7 +23,11 @@ void ParticleGenerator::update(ParticleSystem* ps, double t)
         ps->addSingleParticle(initialPosition, velocityX, velocityY, velocityZ, 0.98, 100, 50);
         singleParticleGenerated = true;
     }
-    else {
+    else if(numFiniteParticles && numParticles < numMaxParticles) {
+        ps->addParticle(initialPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime);
+        numParticles++;
+    }
+    else if(!generateSingleParticle && !numFiniteParticles) {
         ps->addParticle(initialPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime);
     }
 }

@@ -25,9 +25,11 @@
 #include "SolidRigidSystem.h"
 #include "TorqueForceGenerator.h"
 
+#include "Player.h"
+
 #include <iostream>
 
-std::string display_text = "This is a test";
+std::string display_text = "";
 
 
 using namespace physx;
@@ -56,13 +58,16 @@ Particle* particle;
 Particle* particleA;
 Particle* particleB;
 std::vector<Proyectile*> projectiles;
-ParticleSystem* particleSystem;
 SolidRigidSystem* solidSystem;
 SpringForceGenerator* springGenerator = nullptr;
 FloatationForceGenerator* floatationForceGenerator = nullptr;
-
 SolidRigid* cube;
 
+//Items Juego
+PxRigidStatic* techo;
+PxRigidStatic* suelo;
+Player* player;
+ParticleSystem* particleSystem;
 
 
 void initExex() {
@@ -140,72 +145,32 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
+	//ParticleSystem
+	particleSystem = new ParticleSystem();
+
+	// Techo
+	techo = gPhysics->createRigidStatic(PxTransform{ 0,120,0 });
+	PxShape* shape = CreateShape(PxBoxGeometry(1000, 10, 10));
+	techo->attachShape(*shape);
+	gScene->addActor(*techo);
+	RenderItem* item = new RenderItem(shape, techo, { 0,0, 1, 1 });
+
 	// Suelo
-	PxRigidStatic* floor = gPhysics->createRigidStatic(PxTransform{0,0,0});
-	PxShape* shape = CreateShape(PxBoxGeometry(100,0.1,100));
-	floor->attachShape(*shape);
-	gScene->addActor(*floor);
-	RenderItem* item = new RenderItem(shape, floor, {0.8,0.8, 0.8, 1});
+	suelo = gPhysics->createRigidStatic(PxTransform{ 0,-50,0 });
+	PxShape* shape1 = CreateShape(PxBoxGeometry(1000, 10, 10));
+	suelo->attachShape(*shape1);
+	gScene->addActor(*suelo);
+	RenderItem* item1 = new RenderItem(shape1, suelo, { 0,0, 1, 1 });
 
-	solidSystem = new SolidRigidSystem(gScene, gPhysics, gMaterial, 100);
-
-
-	// Cubos y esferas
-	PxBoxGeometry* cubeGeometry = new PxBoxGeometry(10.0f, 1.0f, 1.0f);
-	PxSphereGeometry* sphereGeometry = new PxSphereGeometry(1.0f);
-
-	SolidRigidGenerator* prismaGenerator = new SolidRigidGenerator(
-		cubeGeometry, 2, 
-		10.0f, 20.0f,    // Masa mínima y máxima
-		0.0f, 10.0f,     // Velocidad mínima y máxima
-		0.0f, 5.0f,      // Velocidad angular mínima y máxima
-		-10.0f, 10.0f,   // Rango de posición en X
-		5.0f, 10.0f,     // Rango de posición en Y
-		-10.0f, 10.0f,   // Rango de posición en Z
-		0.1f, 0.5f,      // Elasticidad mínima y máxima
-		0.3f, 0.8f       // Fricción mínima y máxima
-	);
-	SolidRigidGenerator* sphereGenerator = new SolidRigidGenerator(
-		sphereGeometry, 2, 
-		5.0f, 10.0f,       // Masa mínima y máxima
-		0.0f, 7.0f,        // Velocidad mínima y máxima
-		0.0f, 3.0f,        // Velocidad angular mínima y máxima
-		-8.0f, 8.0f,       // Rango de posición en X
-		5.0f, 9.0f,        // Rango de posición en Y
-		-8.0f, 8.0f,       // Rango de posición en Z
-		0.2f, 0.6f,        // Elasticidad mínima y máxima
-		0.4f, 0.9f         // Fricción mínima y máxima
-	);
-
-	solidSystem->addGenerator(prismaGenerator);
-	solidSystem->addGenerator(sphereGenerator);
-
-	/*solidSystem->addForceGenerator(new GravitationalForceGenerator(Vector3(0,-9.8,0)));*/
-	//physx::PxVec3 force(10.0f, 0.0f, 0.0f);
-	//physx::PxVec3 applicationPoint(2.0f, 0.0f, 0.0f); 
-
-	//TorqueForceGenerator* torqueGen = new TorqueForceGenerator(5.0f, force, applicationPoint);
-	//solidSystem->addForceGenerator(torqueGen);
-
-
-	/*cube = new SolidRigid(gScene,&boxGeometry, boxTransform, linearVelocity, angularVelocity, boxMass, gMaterial);*/
-	//initExex();
-	/*particleA = new Particle(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);
-	particleB = new Particle(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), 0.99, 100, 10);*/
-	/*CreateWaterSurface(0.0f);
-	particleSystem = new ParticleSystem();*/
-	/*floatationForceGenerator = new FloatationForceGenerator(1.0f, 2.0f, 0.0f);
-	particleSystem->addForceGenerator(floatationForceGenerator);*/
-	/*particleSystem->addParticle(particleA);  
-	particleSystem->addParticle(particleB); */
-
-	//particleSystem->addGenerator(Vector3(0, 0, 0), DistributionType::Gaussian, 100, 300, 10, true);
-	//Gravedad
-	/*particleSystem->addForceGenerator(new GravitationalForceGenerator(Vector3 (0, -9.8, 0)));*/
-	//Viento
-	//particleSystem->addForceGenerator(new WindForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, -100, 0), 50));
-	//Torbellino
-	//particleSystem->addForceGenerator(new TorbellinoForceGenerator(Vector3(50, 0, 0), 10, 0, Vector3(0, 0, 0), 50, 10));
+	// Player
+	PxGeometry* playerGeometry = new PxBoxGeometry(5, 5, 5); 
+	PxTransform playerTransform{ PxVec3(-75, 50, 0) };          
+	PxVec3 playerLinVel{ 0, 0, 0 };                          
+	PxVec3 playerAngVel{ 0, 0, 0 };                          
+	float playerMass = 1.0f;                                 
+	PxMaterial* playerMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.5f);
+	player = new Player(gScene, playerGeometry, playerTransform, playerLinVel, playerAngVel, playerMass, playerMaterial);
+	player->setSolidInScene();
 }
 
 
@@ -217,15 +182,7 @@ void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
 
-	// Integrar cada proyectil en la lista
-	//for (auto it = projectiles.begin(); it != projectiles.end(); ) {
-	//	(*it)->integrate(t);
-	//		++it;
-	//}
-
-	/*particleSystem->update(t);*/
-	solidSystem->update(t);
-
+	particleSystem->update(t);
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
@@ -237,15 +194,6 @@ void stepPhysics(bool interactive, double t)
 void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
-
-	///*DeregisterRenderItem(ejex);
-	//DeregisterRenderItem(ejey);
-	//DeregisterRenderItem(ejez);*/
-	//DeregisterRenderItem(origen);
-	/*for (auto proj : projectiles) {
-		delete proj;
-	}
-	projectiles.clear();*/
 	
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -272,18 +220,17 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch (toupper(key))
 	{
-	case 'J': 
-		CreateCube();
-		if (!springGenerator) {
-			Vector3 anchor = Vector3(0, 0, 0);  
-			float k = 300.0f;                  
-			float restLength = 5.0f;            
-
-			springGenerator = new SpringForceGenerator(anchor, k, restLength);
-
-			particleSystem->addForceGenerator(springGenerator);
+		case 'J':
+		{
+			player->jump(Vector3(0, 50, 0), 0.1);
+			Vector3 jumpPosition = player->getPosition(); 
+			DistributionType distributionType = DistributionType::Uniform; 
+			int dispersion_area_x = 100; 
+			int dispersion_area_y = 100; 
+			double particleLifetime = 1.0;
+			particleSystem->addGenerator(jumpPosition, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 50);
+			break;
 		}
-		break;
 
 	case 'U': 
 		if (springGenerator != nullptr) {

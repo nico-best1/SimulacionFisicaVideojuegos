@@ -34,7 +34,11 @@ public:
 	}
 
 	~Particle() {
-		DeregisterRenderItem(renderItem);	
+		if (renderItem != nullptr) {
+			DeregisterRenderItem(renderItem);
+			renderItem->release();
+			renderItem = nullptr;
+		}
 	};
 
 	Vector3 getVelocity() { return vel; }

@@ -1,5 +1,5 @@
 #include "SolidRigid.h"
-SolidRigid::SolidRigid(physx::PxScene* sc, physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material) :scene(sc), pose(transform), lifeTime(20){
+SolidRigid::SolidRigid(physx::PxScene* sc, physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material, Vector4 color) :scene(sc), pose(transform), lifeTime(3){
     solid = scene->getPhysics().createRigidDynamic(transform);
     solid->setLinearVelocity(linVel);
     solid->setAngularVelocity(angVel);
@@ -8,7 +8,7 @@ SolidRigid::SolidRigid(physx::PxScene* sc, physx::PxGeometry* geo, physx::PxTran
     Vector3 inertiaTensor = calculateInertiaTensor(mass);
     solid->setMassSpaceInertiaTensor(inertiaTensor);
     solid->setMass(mass);
-    render_item = new RenderItem(shape, solid, { 0.8,0.8,0.8,1 });
+    render_item = new RenderItem(shape, solid, color);
 }
 
 SolidRigid::SolidRigid(SolidRigid& const solid_) {

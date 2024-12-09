@@ -5,7 +5,7 @@
 #include "geometry/PxGeometry.h"
 class SolidRigid
 {
-private:
+protected:
 	physx::PxShape* shape;
 	physx::PxScene* scene;
 	physx::PxTransform pose;
@@ -13,7 +13,7 @@ private:
 	float lifeTime;
 	RenderItem* render_item;
 public:
-	SolidRigid(physx::PxScene* scene, physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material);
+	SolidRigid(physx::PxScene* scene, physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material, Vector4 color);
 	SolidRigid(SolidRigid& const s);
 
 	~SolidRigid() {
