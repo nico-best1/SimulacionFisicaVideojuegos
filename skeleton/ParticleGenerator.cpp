@@ -25,15 +25,24 @@ void ParticleGenerator::update(ParticleSystem* ps, double t)
         singleParticleGenerated = true;
     }
     else if (numFiniteParticles && numParticles < numMaxParticles) {
-        ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime);
+        ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime, GenerateRandomColorYR());
         numParticles++;
     }
     else if (!generateSingleParticle && !numFiniteParticles) {
-        ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime);
+        ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime, {1,1,1,1});
     }
 }
 
+Vector4 ParticleGenerator::GenerateRandomColorYR() {
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
+    float red = 0.8f + distribution(generator) * 0.2f;   
+    float green = 0.4f + distribution(generator) * 0.4f; 
+    float blue = distribution(generator) * 0.2f;        
+
+    return Vector4(red, green, blue, 1.0f);
+}
 
 float ParticleGenerator::generateGaussian(float mean, float stddev)
 {

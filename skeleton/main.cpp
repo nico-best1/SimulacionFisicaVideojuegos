@@ -151,28 +151,32 @@ void initPhysics(bool interactive)
 	particleSystem_player->addForceGenerator(new GravitationalForceGenerator(Vector3(0, -50, 0)));
 
 	// Techo
-	techo = gPhysics->createRigidStatic(PxTransform{ 0,120,0 });
-	PxShape* shape = CreateShape(PxBoxGeometry(1000, 10, 10));
+	PxMaterial* noFrictionMaterial = gPhysics->createMaterial(0.0f, 0.0f, 0.0f);
+	techo = gPhysics->createRigidStatic(PxTransform{ 0, 120, 0 });
+	PxShape* shape = CreateShape(PxBoxGeometry(1000, 10, 10), noFrictionMaterial); 
 	techo->attachShape(*shape);
 	gScene->addActor(*techo);
-	RenderItem* item = new RenderItem(shape, techo, { 0,0, 1, 1 });
+	RenderItem* item = new RenderItem(shape, techo, { 0, 0, 1, 1 });
 
 	// Suelo
-	suelo = gPhysics->createRigidStatic(PxTransform{ 0,-50,0 });
-	PxShape* shape1 = CreateShape(PxBoxGeometry(1000, 10, 10));
+	suelo = gPhysics->createRigidStatic(PxTransform{ 0, -50, 0 });
+	PxShape* shape1 = CreateShape(PxBoxGeometry(1000, 10, 10), noFrictionMaterial); 
 	suelo->attachShape(*shape1);
 	gScene->addActor(*suelo);
-	RenderItem* item1 = new RenderItem(shape1, suelo, { 0,0, 1, 1 });
+	RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
 
 	// Player
-	PxGeometry* playerGeometry = new PxBoxGeometry(5, 5, 5); 
-	PxTransform playerTransform{ PxVec3(-75, 50, 0) };          
-	PxVec3 playerLinVel{ 0, 0, 0 };                          
-	PxVec3 playerAngVel{ 0, 0, 0 };                          
-	float playerMass = 1.0f;                                 
-	PxMaterial* playerMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.5f);
-	player = new Player(gScene, playerGeometry, playerTransform, playerLinVel, playerAngVel, playerMass, playerMaterial);
+	PxGeometry* playerGeometry = new PxBoxGeometry(5, 5, 5);
+	PxTransform playerTransform{ PxVec3(-75, 50, 0) };
+	PxVec3 playerLinVel{ 0, 0, 0 };
+	PxVec3 playerAngVel{ 0, 0, 0 };
+	float playerMass = 1.0f;
+	player = new Player(gScene, playerGeometry, playerTransform, playerLinVel, playerAngVel, playerMass, noFrictionMaterial);
 	player->setSolidInScene();
+	PxRigidDynamic* playerRigidBody = static_cast<PxRigidDynamic*>(player->getSolid());
+	playerRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true); 
+	playerRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false); 
+
 }
 
 
@@ -238,8 +242,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		particleSystem_player->addGenerator(playerPositionCallback, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 25);
 		break;
 	}
-
-
 	case 'U': 
 		if (springGenerator != nullptr) {
 			springGenerator->AddKConstant(100);

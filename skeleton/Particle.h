@@ -33,6 +33,16 @@ public:
 		RegisterRenderItem(renderItem);
 	}
 
+	// Constructora con color
+	Particle(Vector3 Pos, Vector3 Vel, Vector3 A, double Damping, int lifetime_, Vector4 color)
+		: vel(Vel), a(A), damping(Damping), lifetime(lifetime_) {
+		mass = static_cast<double>(rand()) / RAND_MAX * 50;
+		pose = physx::PxTransform(Pos);
+		PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
+		renderItem = new RenderItem(shape, &pose, color);
+		RegisterRenderItem(renderItem);
+	}
+
 	~Particle() {
 		if (renderItem != nullptr) {
 			DeregisterRenderItem(renderItem);

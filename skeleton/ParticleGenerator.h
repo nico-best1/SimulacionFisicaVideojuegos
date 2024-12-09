@@ -25,6 +25,7 @@ private:
 
     float generateGaussian(float mean, float stddev);
     float generateUniform(float min, float max);
+    Vector4 GenerateRandomColorYR();
 
 public:
     ParticleGenerator(std::function<Vector3()> positionCallback,
