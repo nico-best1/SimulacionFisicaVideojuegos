@@ -20,9 +20,19 @@ protected:
 public:
     ParticleSystem() : activeExplosion(false) {}
 
-    void addGenerator(Vector3 pos, DistributionType distributionType, int dispersion_area_x_, int dispersion_area_y_, double particleLifetime, bool SingleparticleGenerator, bool finiteparticles, int numMaxParticles) {
-        generators.push_back(new ParticleGenerator(pos, distributionType, dispersion_area_x_, dispersion_area_y_, particleLifetime, SingleparticleGenerator, finiteparticles, numMaxParticles));
+    void addGenerator(std::function<Vector3()> positionCallback,
+        DistributionType distributionType,
+        int dispersion_area_x_,
+        int dispersion_area_y_,
+        double particleLifetime,
+        bool singleParticleGenerator,
+        bool finiteParticles,
+        int numMaxParticles) {
+        generators.push_back(new ParticleGenerator(positionCallback, distributionType, dispersion_area_x_,
+            dispersion_area_y_, particleLifetime, singleParticleGenerator,
+            finiteParticles, numMaxParticles));
     }
+
 
     void addForceGenerator(ForceGenerator* fg) {
         forceGenerators.push_back(fg);

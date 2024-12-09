@@ -57,6 +57,7 @@ RenderItem* origen;
 Particle* particle;
 Particle* particleA;
 Particle* particleB;
+ParticleSystem* particleSystem;
 std::vector<Proyectile*> projectiles;
 SolidRigidSystem* solidSystem;
 SpringForceGenerator* springGenerator = nullptr;
@@ -67,7 +68,7 @@ SolidRigid* cube;
 PxRigidStatic* techo;
 PxRigidStatic* suelo;
 Player* player;
-ParticleSystem* particleSystem;
+ParticleSystem* particleSystem_player;
 
 
 void initExex() {
@@ -145,8 +146,9 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	//ParticleSystem
-	particleSystem = new ParticleSystem();
+	//ParticleSystem player
+	particleSystem_player = new ParticleSystem();
+	particleSystem_player->addForceGenerator(new GravitationalForceGenerator(Vector3(0, -50, 0)));
 
 	// Techo
 	techo = gPhysics->createRigidStatic(PxTransform{ 0,120,0 });
@@ -182,7 +184,7 @@ void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
 
-	particleSystem->update(t);
+	particleSystem_player->update(t);
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
@@ -220,17 +222,23 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch (toupper(key))
 	{
-		case 'J':
-		{
-			player->jump(Vector3(0, 50, 0), 0.1);
-			Vector3 jumpPosition = player->getPosition(); 
-			DistributionType distributionType = DistributionType::Uniform; 
-			int dispersion_area_x = 100; 
-			int dispersion_area_y = 100; 
-			double particleLifetime = 1.0;
-			particleSystem->addGenerator(jumpPosition, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 50);
-			break;
-		}
+	case 'J':
+	{
+		player->jump(Vector3(0, 50, 0), 0.1);
+
+		auto playerPositionCallback = [&]() -> Vector3 {
+			return player->getPosition();
+		};
+
+		DistributionType distributionType = DistributionType::Uniform;
+		int dispersion_area_x = 100;
+		int dispersion_area_y = 100;
+		double particleLifetime = 1.0f;
+
+		particleSystem_player->addGenerator(playerPositionCallback, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 25);
+		break;
+	}
+
 
 	case 'U': 
 		if (springGenerator != nullptr) {

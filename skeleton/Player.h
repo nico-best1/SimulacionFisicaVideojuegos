@@ -29,7 +29,7 @@ public:
 
     Vector3 getPosition() {
         physx::PxTransform currentPose = getSolid()->getGlobalPose();
-        return Vector3(currentPose.p.x- 2, currentPose.p.y - 3, currentPose.p.z);
+        return Vector3(currentPose.p.x - 2, currentPose.p.y - 5, currentPose.p.z);
     }
 
     void jump(const Vector3& force, float duration) {

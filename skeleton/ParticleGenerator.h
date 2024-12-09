@@ -1,6 +1,8 @@
 #pragma once
 #include "Particle.h"
 #include <list>
+#include <functional> 
+
 class ParticleSystem;
 
 enum class DistributionType {
@@ -11,23 +13,38 @@ enum class DistributionType {
 class ParticleGenerator
 {
 private:
-	Vector3 initialPosition;
-	DistributionType distributionType;
-	int dipersion_area_x, dipersion_area_y;
-	double particleLifetime;
-	bool generateSingleParticle; 
-	bool singleParticleGenerated = false;
-	bool numFiniteParticles = false;
-	int numParticles = 0;
-	int numMaxParticles;
+    std::function<Vector3()> getPositionCallback; // Callback para obtener posición dinámica
+    DistributionType distributionType;
+    int dispersion_area_x, dispersion_area_y;
+    double particleLifetime;
+    bool generateSingleParticle;
+    bool singleParticleGenerated = false;
+    bool numFiniteParticles = false;
+    int numParticles = 0;
+    int numMaxParticles;
 
-	float generateGaussian(float mean, float stddev);
-	float generateUniform(float min, float max);
+    float generateGaussian(float mean, float stddev);
+    float generateUniform(float min, float max);
+
 public:
-	ParticleGenerator(Vector3 p, DistributionType distributionType, int dipersion_area_x_, int dipersion_area_y_, double particleLifetime_, bool generateSingleParticle_, bool numFiniteParticles_, int numMaxParticles_)
-		:initialPosition(p), dipersion_area_x(dipersion_area_x_), dipersion_area_y(dipersion_area_y_), particleLifetime(particleLifetime_), generateSingleParticle(generateSingleParticle_), numFiniteParticles(numFiniteParticles_), numMaxParticles(numMaxParticles_) {};
+    ParticleGenerator(std::function<Vector3()> positionCallback,
+        DistributionType distributionType,
+        int dispersion_area_x_,
+        int dispersion_area_y_,
+        double particleLifetime_,
+        bool generateSingleParticle_,
+        bool numFiniteParticles_,
+        int numMaxParticles_)
+        : getPositionCallback(positionCallback),
+        dispersion_area_x(dispersion_area_x_),
+        dispersion_area_y(dispersion_area_y_),
+        particleLifetime(particleLifetime_),
+        generateSingleParticle(generateSingleParticle_),
+        numFiniteParticles(numFiniteParticles_),
+        numMaxParticles(numMaxParticles_) {
+    }
 
-	~ParticleGenerator() {}
+    ~ParticleGenerator() {}
 
-	void update(ParticleSystem* Psys, double t);
+    void update(ParticleSystem* ps, double t);
 };
