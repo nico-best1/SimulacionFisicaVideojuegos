@@ -1,4 +1,4 @@
-#include <ctype.h>
+﻿#include <ctype.h>
 
 #include <PxPhysicsAPI.h>
 
@@ -69,6 +69,8 @@ PxRigidStatic* techo;
 PxRigidStatic* suelo;
 Player* player;
 ParticleSystem* particleSystem_player;
+SolidRigidSystem* solidSystem_obstacles;
+float timeSinceLastWindGenerator = 0.0f;
 
 
 void initExex() {
@@ -105,12 +107,6 @@ void CreateWaterSurface(float waterLevel) {
 	physx::PxShape* waterShape = CreateShape(waterBox);
 	physx::PxTransform* waterTransform = new PxTransform(0.0f, waterLevel, 0.0f);
 	RenderItem* waterSurface = new RenderItem(waterShape, waterTransform, physx::PxVec4(0, 0, 1, 0.5f));
-
-	/*float boxHeight = 5.0f;  
-	physx::PxBoxGeometry containerBox = PxBoxGeometry(10.0f, boxHeight, 10.0f); 
-	physx::PxShape* containerShape = CreateShape(containerBox);
-	physx::PxTransform* containerTransform = new PxTransform(0.0f, waterLevel - boxHeight, 0.0f); 
-	RenderItem* container = new RenderItem(containerShape, containerTransform, physx::PxVec4(1, 0, 0, 0.1f)); */
 }
 
 void CreateFloatingObject(float objectHeight) {
@@ -121,6 +117,74 @@ void CreateFloatingObject(float objectHeight) {
 	particleSystem->addForceGenerator(floatationForceGenerator);
 }
 
+void CreateSueloTecho() {
+	PxMaterial* noFrictionMaterial = gPhysics->createMaterial(0.0f, 0.0f, 0.0f);
+	// Techo
+	techo = gPhysics->createRigidStatic(PxTransform{ 0, 120, 0 });
+	PxShape* shape = CreateShape(PxBoxGeometry(1000, 10, 10), noFrictionMaterial);
+	techo->attachShape(*shape);
+	gScene->addActor(*techo);
+	RenderItem* item = new RenderItem(shape, techo, { 0, 0, 1, 1 });
+
+	// Suelo
+	suelo = gPhysics->createRigidStatic(PxTransform{ 0, -50, 0 });
+	PxShape* shape1 = CreateShape(PxBoxGeometry(1000, 10, 10), noFrictionMaterial);
+	suelo->attachShape(*shape1);
+	gScene->addActor(*suelo);
+	RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
+}
+void CreatePlayer() {
+	PxMaterial* noFrictionMaterial = gPhysics->createMaterial(0.0f, 0.0f, 0.0f);
+	particleSystem_player = new ParticleSystem();
+	particleSystem_player->addForceGenerator(new GravitationalForceGenerator(Vector3(0, -50, 0)));
+	PxGeometry* playerGeometry = new PxBoxGeometry(5, 5, 5);
+	PxTransform playerTransform{ PxVec3(-75, 50, 0) };
+	PxVec3 playerLinVel{ 0, 0, 0 };
+	PxVec3 playerAngVel{ 0, 0, 0 };
+	float playerMass = 1.0f;
+	player = new Player(gScene, playerGeometry, playerTransform, playerLinVel, playerAngVel, playerMass, noFrictionMaterial);
+	player->setSolidInScene();
+	PxRigidDynamic* playerRigidBody = static_cast<PxRigidDynamic*>(player->getSolid());
+	playerRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true);
+	playerRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false);
+}
+
+void CreateObstacles() {
+	solidSystem_obstacles = new SolidRigidSystem(gScene, gPhysics, gMaterial, 10000, 5.0f);
+	PxBoxGeometry* cubeGeometry = new PxBoxGeometry(10.0f, 10.0f, 10.0f);
+	SolidRigidGenerator* ObstacleGenerator = new SolidRigidGenerator(
+		cubeGeometry,
+		10000,
+		10.0f, 20.0f,
+		1.0f, 5.0f,
+		0.0f, 2.0f,
+		200.0f, 200.0f,
+		-15.0f, 100.0f,
+		0.0f, 0.0f,
+		0.2f, 0.6f,
+		0.4f, 0.9f
+	);
+	solidSystem_obstacles->addGenerator(ObstacleGenerator);
+	Vector3 windVelocity(-50.0f, 0.0f, 0.0f);
+	float k1 = 0.3f;
+	float k2 = 0.7f;
+	Vector3 center(0.0f, 0.0f, 0.0f);
+	float radius = 1000.0f;
+	solidSystem_obstacles->addForceGenerator(new WindForceGenerator(windVelocity, k1, k2, center, radius));
+}
+
+void IncreaseObstacleMovement(float& timeSinceLastWindGenerator_) {
+	if (timeSinceLastWindGenerator_ >= 3.0f) {
+		Vector3 newWindVelocity(-50.0f, 0.0f, 0.0f); 
+		float newK1 = 0.3f;
+		float newK2 = 0.7f;
+		Vector3 newCenter(0.0f, 0.0f, 0.0f);
+		float newRadius = 1000.0f;
+
+		solidSystem_obstacles->addForceGenerator(new WindForceGenerator(newWindVelocity, newK1, newK2, newCenter, newRadius));
+		timeSinceLastWindGenerator_ = 0.0f;
+	}
+}
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -146,37 +210,9 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	//ParticleSystem player
-	particleSystem_player = new ParticleSystem();
-	particleSystem_player->addForceGenerator(new GravitationalForceGenerator(Vector3(0, -50, 0)));
-
-	// Techo
-	PxMaterial* noFrictionMaterial = gPhysics->createMaterial(0.0f, 0.0f, 0.0f);
-	techo = gPhysics->createRigidStatic(PxTransform{ 0, 120, 0 });
-	PxShape* shape = CreateShape(PxBoxGeometry(1000, 10, 10), noFrictionMaterial); 
-	techo->attachShape(*shape);
-	gScene->addActor(*techo);
-	RenderItem* item = new RenderItem(shape, techo, { 0, 0, 1, 1 });
-
-	// Suelo
-	suelo = gPhysics->createRigidStatic(PxTransform{ 0, -50, 0 });
-	PxShape* shape1 = CreateShape(PxBoxGeometry(1000, 10, 10), noFrictionMaterial); 
-	suelo->attachShape(*shape1);
-	gScene->addActor(*suelo);
-	RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
-
-	// Player
-	PxGeometry* playerGeometry = new PxBoxGeometry(5, 5, 5);
-	PxTransform playerTransform{ PxVec3(-75, 50, 0) };
-	PxVec3 playerLinVel{ 0, 0, 0 };
-	PxVec3 playerAngVel{ 0, 0, 0 };
-	float playerMass = 1.0f;
-	player = new Player(gScene, playerGeometry, playerTransform, playerLinVel, playerAngVel, playerMass, noFrictionMaterial);
-	player->setSolidInScene();
-	PxRigidDynamic* playerRigidBody = static_cast<PxRigidDynamic*>(player->getSolid());
-	playerRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD, true); 
-	playerRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false); 
-
+	CreateSueloTecho();
+	CreatePlayer();
+	CreateObstacles();
 }
 
 
@@ -188,7 +224,10 @@ void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
 
+	timeSinceLastWindGenerator += static_cast<float>(t);
+	IncreaseObstacleMovement(timeSinceLastWindGenerator);
 	particleSystem_player->update(t);
+	solidSystem_obstacles->update(t);
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
@@ -229,7 +268,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'J':
 	{
-		player->jump(Vector3(0, 25, 0), 0.1);
+		player->jump(Vector3(0, 35, 0), 0.1);
 
 		auto playerPositionCallback = [&]() -> Vector3 {
 			return player->getPosition();

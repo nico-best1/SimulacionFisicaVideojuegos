@@ -16,6 +16,9 @@ private:
     std::list<ForceGenerator*> forceGenerators;
     unsigned int maxSolids;
     bool activeExplosion;
+    float generationInterval; 
+    float timeSinceLastGeneration; 
+    float timeSinceLastgenerationIncrease;
 
     float generateRandom(float min, float max) {
         static std::default_random_engine generator;
@@ -24,8 +27,8 @@ private:
     }
 
 public:
-    SolidRigidSystem(physx::PxScene* scene_, physx::PxPhysics* physics_, physx::PxMaterial* material, unsigned int maxSolids_)
-        : scene(scene_), physics(physics_), defaultMaterial(material), maxSolids(maxSolids_) {
+    SolidRigidSystem(physx::PxScene* scene_, physx::PxPhysics* physics_, physx::PxMaterial* material, unsigned int maxSolids_, float generationInterval_)
+        : scene(scene_), physics(physics_), defaultMaterial(material), maxSolids(maxSolids_), generationInterval(generationInterval_), timeSinceLastGeneration(0.0f), timeSinceLastgenerationIncrease(0.0f){
     }
 
     ~SolidRigidSystem() {
@@ -44,15 +47,25 @@ public:
         return physics->createMaterial(friction, friction, elasticity);
     }
 
-    void addSolid(physx::PxGeometry* geo, physx::PxTransform transform, physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material = nullptr) {
+    void SolidRigidSystem::addSolid(physx::PxGeometry* geo, physx::PxTransform transform, Vector3 linVel, Vector3 angVel, float mass, physx::PxMaterial* material = nullptr) {
         if (solids.size() >= maxSolids) return;
 
         if (!material) material = defaultMaterial;
 
-        SolidRigid* newSolid = new SolidRigid(scene, geo, transform, linVel, angVel, mass, material, {1,1,1,1});
+        SolidRigid* newSolid = new SolidRigid(scene, geo, transform, {0,0,0}, { 0,0,0 }, mass, material, {1,1,0,1});
         newSolid->setSolidInScene();
+
+        physx::PxRigidDynamic* dynamicActor = newSolid->getSolid();
+        if (dynamicActor) {
+            dynamicActor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+        }
+
+        newSolid->getSolid()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X |
+            physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
+            physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
         solids.push_back(newSolid);
     }
+
 
     void addStaticObstacle(physx::PxGeometry* geo, physx::PxTransform transform) {
         physx::PxRigidStatic* staticObstacle = physics->createRigidStatic(transform);
@@ -74,11 +87,17 @@ public:
     }
 
     void update(double deltaTime) {
-
-        for (auto fg : forceGenerators) {
-            fg->updateSolid(deltaTime, this);
+        timeSinceLastGeneration += static_cast<float>(deltaTime);
+        timeSinceLastgenerationIncrease += static_cast<float>(deltaTime);
+        if (timeSinceLastGeneration >= generationInterval) {
+            updateGenerators();
+            timeSinceLastGeneration = 0.0f; 
         }
-        updateGenerators();
+
+        if (timeSinceLastgenerationIncrease >= 10.0f && generationInterval > 2.0f) {
+            generationInterval-= 0.5f;
+        }
+
         for (auto it = solids.begin(); it != solids.end(); ) {
             applyForces(*it);
             (*it)->integrate(deltaTime);

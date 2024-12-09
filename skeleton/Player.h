@@ -11,7 +11,7 @@ private:
 public:
     Player(physx::PxScene* scene, physx::PxGeometry* geo, physx::PxTransform transform,
         physx::PxVec3 linVel, physx::PxVec3 angVel, float mass, physx::PxMaterial* material)
-        : SolidRigid(scene, geo, transform, linVel, angVel, mass, material, {1,1,0,1}) {
+        : SolidRigid(scene, geo, transform, linVel, angVel, mass, material, {1,0,0,1}) {
         this->getSolid()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X |
             physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
             physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);

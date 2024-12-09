@@ -26,8 +26,20 @@ public:
 	void integrate(double t);
 	physx::PxVec3 calculateInertiaTensor(float mass);
 
-	bool isDead() const {
-		return lifeTime <= 0;
+	bool IsOutOfSite() {
+		if (getSolid()->getGlobalPose().p.x < -200) {
+			return true;
+		}
+		else return false;
+	}
+
+	bool isDead() {
+		if (lifeTime <= 0 || IsOutOfSite()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	SolidRigid& operator=(const SolidRigid& p) {
