@@ -219,6 +219,7 @@ void shootProyectile(Vector3 camPos, Vector3 camVel, double real_velocity, doubl
 	projectiles.push_back(new Proyectile(mass, camPos, camVel, Vector3(0, 0, 0), Damping, real_velocity, simulated_velocity));
 }
 
+
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
@@ -228,7 +229,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'J':
 	{
-		player->jump(Vector3(0, 50, 0), 0.1);
+		player->jump(Vector3(0, 25, 0), 0.1);
 
 		auto playerPositionCallback = [&]() -> Vector3 {
 			return player->getPosition();
@@ -239,7 +240,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		int dispersion_area_y = 100;
 		double particleLifetime = 1.0f;
 
-		particleSystem_player->addGenerator(playerPositionCallback, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 25);
+		particleSystem_player->addGenerator(playerPositionCallback, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 20);
 		break;
 	}
 	case 'U': 

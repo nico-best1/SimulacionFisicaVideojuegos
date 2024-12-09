@@ -5,6 +5,8 @@
 class Player : public SolidRigid {
 private:
     TemporaryForceGenerator* jumpForce = nullptr;
+    float maxSpeed = 30.0f;
+    Vector3 lastVelocity;
 
 public:
     Player(physx::PxScene* scene, physx::PxGeometry* geo, physx::PxTransform transform,
@@ -33,12 +35,24 @@ public:
     }
 
     void jump(const Vector3& force, float duration) {
-        if (jumpForce) {
-            delete jumpForce;
+        Vector3 currentVelocity = getSolid()->getLinearVelocity();
+        if (currentVelocity.y < maxSpeed) {
+            if (jumpForce) {
+                delete jumpForce;
+            }
+            jumpForce = new TemporaryForceGenerator(force, duration);
+            Vector3 newForce = jumpForce->newForceSolid(this);
+            getSolid()->addForce(Vector3(newForce.x, newForce.y, newForce.z), physx::PxForceMode::eIMPULSE);
         }
-        jumpForce = new TemporaryForceGenerator(force, duration);
-        Vector3 newForce = jumpForce->newForceSolid(this);
-        getSolid()->addForce(physx::PxVec3(newForce.x, newForce.y, newForce.z), physx::PxForceMode::eIMPULSE);
     }
 
+    void update() {
+        Vector3 currentVelocity = getSolid()->getLinearVelocity();
+
+        if (currentVelocity.y < lastVelocity.y) {
+            getSolid()->addForce(Vector3(0, -10, 0), physx::PxForceMode::eIMPULSE);
+        }
+
+        lastVelocity = currentVelocity;
+    }
 };
