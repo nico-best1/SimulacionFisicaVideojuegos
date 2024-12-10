@@ -47,8 +47,8 @@ public:
         return physics->createMaterial(friction, friction, elasticity);
     }
 
-    void SolidRigidSystem::addSolid(physx::PxGeometry* geo, physx::PxTransform transform, Vector3 linVel, Vector3 angVel, float mass, physx::PxMaterial* material = nullptr) {
-        if (solids.size() >= maxSolids) return;
+    SolidRigid* SolidRigidSystem::addSolid(physx::PxGeometry* geo, physx::PxTransform transform, Vector3 linVel, Vector3 angVel, float mass, physx::PxMaterial* material = nullptr) {
+        if (solids.size() >= maxSolids) return nullptr;
 
         if (!material) material = defaultMaterial;
 
@@ -64,6 +64,8 @@ public:
             physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
             physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
         solids.push_back(newSolid);
+
+        return newSolid;
     }
 
 

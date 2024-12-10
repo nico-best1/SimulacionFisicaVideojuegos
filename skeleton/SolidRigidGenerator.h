@@ -1,4 +1,5 @@
 #pragma once
+#include "BidirectionalSpringForceGenerator.h"
 #include <random>
 #include "core.hpp"
 #include "RenderUtils.hpp"

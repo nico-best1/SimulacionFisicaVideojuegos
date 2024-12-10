@@ -40,23 +40,22 @@ public:
     }
 
     Vector3 newForceSolid(SolidRigid* sr) override {
-        Vector3 displacement = particle1->getPosition() - particle2->getPosition();
+        Vector3 displacement = solidRigid1->getPose().p - solidRigid2->getPose().p;
         float length = displacement.magnitude();
 
-        if (sr == solidRigid1) {
-            if (length > restLength) {
-                Vector3 force = displacement;
-                force *= -k * (length - restLength) / length;
-                return force;
+        if (length > restLength) {
+            Vector3 direction = displacement.getNormalized(); 
+            float forceMagnitude = k * (length - restLength);
+            Vector3 force = direction * forceMagnitude; 
+
+            if (sr == solidRigid1) {
+                return -force; 
+            }
+            else if (sr == solidRigid2) {
+                return force; 
             }
         }
-        else if (sr == solidRigid2) {
-            if (length > restLength) {
-                Vector3 force = displacement;
-                force *= k * (length - restLength) / length;
-                return force;
-            }
-        }
-        return Vector3(0, 0, 0);
+        return Vector3(0, 0, 0); 
     }
+
 };
