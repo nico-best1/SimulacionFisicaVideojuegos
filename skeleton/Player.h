@@ -49,8 +49,8 @@ public:
     void update() {
         Vector3 currentVelocity = getSolid()->getLinearVelocity();
 
-        if (currentVelocity.y < lastVelocity.y) {
-            getSolid()->addForce(Vector3(0, -10, 0), physx::PxForceMode::eIMPULSE);
+        if (currentVelocity.y > 0) {
+            getSolid()->addForce(Vector3(0, -20, 0), physx::PxForceMode::eIMPULSE); 
         }
 
         lastVelocity = currentVelocity;
