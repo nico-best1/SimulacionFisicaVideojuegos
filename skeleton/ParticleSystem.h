@@ -20,6 +20,24 @@ protected:
 public:
     ParticleSystem() : activeExplosion(false) {}
 
+    ~ParticleSystem() {
+        for (auto it = forceGenerators.begin(); it != forceGenerators.end(); ++it) {
+            delete* it;
+        }
+        forceGenerators.clear();
+
+        for (auto it = generators.begin(); it != generators.end(); ++it) {
+            delete* it;
+        }
+        generators.clear();
+
+        for (auto it = particles.begin(); it != particles.end(); ++it) {
+            delete* it;
+        }
+        particles.clear();
+    }
+
+
     void addGenerator(std::function<Vector3()> positionCallback,
         DistributionType distributionType,
         int dispersion_area_x_,

@@ -17,10 +17,14 @@ public:
 	SolidRigid(SolidRigid& const s);
 
 	~SolidRigid() {
-		solid->release();
 		if (render_item != nullptr) {
 			DeregisterRenderItem(render_item);
+			render_item->release();
+			render_item = nullptr;
 		}
+
+		solid->release();
+		solid = nullptr;
 	}
 
 	void integrate(double t);

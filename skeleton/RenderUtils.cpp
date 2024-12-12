@@ -150,7 +150,7 @@ void renderLoop()
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(motionCallback);
 	motionCallback(0,0);
-	glutFullScreen();
+	//glutFullScreen();
 	atexit(exitCallback);
 
 	initPhysics(true);

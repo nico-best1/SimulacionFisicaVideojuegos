@@ -42,5 +42,13 @@ public:
         minFriction(minFriction_), maxFriction(maxFriction_) {
     }
 
+    ~SolidRigidGenerator() {
+        if (geometryTemplate != nullptr) {
+            delete geometryTemplate;
+            geometryTemplate = nullptr;
+        }
+    }
+
+
     void generate(SolidRigidSystem* SRs);
 };

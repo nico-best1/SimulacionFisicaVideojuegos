@@ -25,6 +25,8 @@
     <ClCompile Include="SolidRigidGenerator.cpp" />
     <ClCompile Include="TorqueForceGenerator.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -54,6 +56,8 @@
     <ClInclude Include="SolidRigidGenerator.h" />
     <ClInclude Include="TorqueForceGenerator.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
