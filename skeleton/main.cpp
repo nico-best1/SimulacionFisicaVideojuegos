@@ -325,11 +325,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
 }
 
 
-void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
+void onCollision(physx::PxRigidActor* actor1, physx::PxRigidActor* actor2)
 {
-	PX_UNUSED(actor1);
-	PX_UNUSED(actor2);
+	if (player->getSolid() == actor1 || player->getSolid() == actor2) {
+		PxRigidActor* otherActor = (player->getSolid() == actor1) ? actor2 : actor1;
+
+		if (otherActor->getType() != PxActorType::eRIGID_STATIC) {
+			std::cout << "El jugador ha colisionado con un objeto dinámico." << std::endl;
+			exit(0); 
+		}
+	}
 }
+
 
 int main(int, const char*const*)
 {
