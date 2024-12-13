@@ -19,6 +19,7 @@ private:
 	PxRigidStatic* suelo;
 	Player* player;
 	ParticleSystem* particleSystem_player;
+	ParticleSystem* particleSystem_player_techo_suelo;
 	SolidRigidSystem* solidSystem_obstacles;
 
 public:
@@ -52,6 +53,9 @@ public:
 		delete particleSystem_player;
 		particleSystem_player = nullptr;
 
+		delete particleSystem_player_techo_suelo;
+		particleSystem_player_techo_suelo = nullptr;
+
 		delete solidSystem_obstacles;
 		solidSystem_obstacles = nullptr;
 	}
@@ -76,6 +80,8 @@ public:
 		scene->addActor(*suelo);
 		RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
 		renderItems.push_back(item1);  // Guardar el RenderItem
+
+		particleSystem_player_techo_suelo = new ParticleSystem();
 	}
 
 	void CreatePlayer() {
@@ -144,7 +150,22 @@ public:
 		int dispersion_area_y = 100;
 		double particleLifetime = 1.0f;
 
-		particleSystem_player->addGenerator(playerPositionCallback, distributionType, dispersion_area_x, dispersion_area_y, particleLifetime, false, true, 20);
+		particleSystem_player->addGenerator(playerPositionCallback, distributionType, dispersion_area_x, 
+			dispersion_area_y, particleLifetime, false, true, 20);
+	}
+
+	void ColisionWithFloorCeiling() {
+		auto playerPositionCallback = [&]() -> Vector3 {
+			return player->getPosition();
+			};
+
+		DistributionType distributionType = DistributionType::Uniform;
+		int dispersion_area_x = 100;
+		int dispersion_area_y = 100;
+		double particleLifetime = 1.0f;
+
+     		particleSystem_player_techo_suelo->addGenerator(playerPositionCallback, distributionType, dispersion_area_x,
+			dispersion_area_y, particleLifetime, false, true, 10);
 	}
 
 	bool onCollisionGame(physx::PxRigidActor* actor1, physx::PxRigidActor* actor2) {
@@ -153,7 +174,10 @@ public:
 
 			if (otherActor->getType() != PxActorType::eRIGID_STATIC) {
 				return true;
-				exit(0);
+			}
+			if (otherActor->getType() == PxActorType::eRIGID_STATIC) {
+				ColisionWithFloorCeiling();
+				return false;
 			}
 		}
 		return false;
