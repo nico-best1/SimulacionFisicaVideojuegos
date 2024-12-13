@@ -96,7 +96,7 @@ public:
             applyForces(*it);
             (*it)->integrate(t);
 
-            if ((*it)->isDead() || (*it)->isOutOfBounds(100, 300)) {
+            if ((*it)->isDead() || (*it)->isOutOfBounds(1000,1000)) {
                 delete* it;
                 it = particles.erase(it);
             }

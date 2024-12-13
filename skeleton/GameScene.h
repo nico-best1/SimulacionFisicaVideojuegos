@@ -19,7 +19,7 @@ private:
 	PxRigidStatic* suelo;
 	Player* player;
 	ParticleSystem* particleSystem_player;
-	ParticleSystem* particleSystem_player_techo_suelo;
+	ParticleSystem* particleSystem_stars;
 	SolidRigidSystem* solidSystem_obstacles;
 
 public:
@@ -53,8 +53,8 @@ public:
 		delete particleSystem_player;
 		particleSystem_player = nullptr;
 
-		delete particleSystem_player_techo_suelo;
-		particleSystem_player_techo_suelo = nullptr;
+		delete particleSystem_stars;
+		particleSystem_stars = nullptr;
 
 		delete solidSystem_obstacles;
 		solidSystem_obstacles = nullptr;
@@ -71,7 +71,7 @@ public:
 		techo->attachShape(*shape);
 		scene->addActor(*techo);
 		RenderItem* item = new RenderItem(shape, techo, { 0, 0, 1, 1 });
-		renderItems.push_back(item);  // Guardar el RenderItem
+		renderItems.push_back(item);
 
 		// Suelo
 		suelo = physics->createRigidStatic(PxTransform{ 0, -50, 0 });
@@ -79,10 +79,36 @@ public:
 		suelo->attachShape(*shape1);
 		scene->addActor(*suelo);
 		RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
-		renderItems.push_back(item1);  // Guardar el RenderItem
+		renderItems.push_back(item1);
 
-		particleSystem_player_techo_suelo = new ParticleSystem();
+		// Sistema de partículas para estrellas
+		particleSystem_stars = new ParticleSystem();
+
+		// Callback para obtener una posición aleatoria en un área más amplia
+		auto starsPositionCallback = []() -> Vector3 {
+			static std::default_random_engine generator;
+			std::uniform_real_distribution<float> distributionX(-1000.0f, 1000.0f); // Área amplia en X
+			std::uniform_real_distribution<float> distributionY(-500.0f, 300.0f);     // Altura del cielo
+			std::uniform_real_distribution<float> distributionZ(-500.0f, -200.0f);    // Mínimo 200 en Z
+			return Vector3(distributionX(generator), distributionY(generator), distributionZ(generator));
+			};
+
+		// Generador de estrellas
+		int dispersion_area_x = 1000; // Más amplio
+		int dispersion_area_y = 500;  // Igual que antes
+		double particleLifetime = 1000.0; // Estrellas duran indefinidamente, pero pueden ser recicladas
+		particleSystem_stars->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,   // No es una sola partícula
+			false,   // Número infinito de partículas
+			0        // Ignorado porque es infinito
+		);
 	}
+
 
 	void CreatePlayer() {
 		PxMaterial* noFrictionMaterial = physics->createMaterial(0.0f, 0.0f, 0.0f);
@@ -154,20 +180,6 @@ public:
 			dispersion_area_y, particleLifetime, false, true, 20);
 	}
 
-	void ColisionWithFloorCeiling() {
-		auto playerPositionCallback = [&]() -> Vector3 {
-			return player->getPosition();
-			};
-
-		DistributionType distributionType = DistributionType::Uniform;
-		int dispersion_area_x = 100;
-		int dispersion_area_y = 100;
-		double particleLifetime = 1.0f;
-
-     		particleSystem_player_techo_suelo->addGenerator(playerPositionCallback, distributionType, dispersion_area_x,
-			dispersion_area_y, particleLifetime, false, true, 10);
-	}
-
 	bool onCollisionGame(physx::PxRigidActor* actor1, physx::PxRigidActor* actor2) {
 		if (player->getSolid() == actor1 || player->getSolid() == actor2) {
 			PxRigidActor* otherActor = (player->getSolid() == actor1) ? actor2 : actor1;
@@ -175,15 +187,12 @@ public:
 			if (otherActor->getType() != PxActorType::eRIGID_STATIC) {
 				return true;
 			}
-			if (otherActor->getType() == PxActorType::eRIGID_STATIC) {
-				ColisionWithFloorCeiling();
-				return false;
-			}
 		}
 		return false;
 	}
 
 	void update(float& timeSinceLastWindGenerator, double t) {
+		particleSystem_stars->update(t);
 		particleSystem_player->update(t);
 		solidSystem_obstacles->update(t);
 		IncreaseObstacleMovement(timeSinceLastWindGenerator);
