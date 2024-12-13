@@ -8,6 +8,7 @@ SolidRigid::SolidRigid(physx::PxScene* sc, physx::PxGeometry* geo, physx::PxTran
     Vector3 inertiaTensor = calculateInertiaTensor(mass);
     solid->setMassSpaceInertiaTensor(inertiaTensor);
     solid->setMass(mass);
+    scene->addActor(*solid);
     render_item = new RenderItem(shape, solid, color);
 }
 

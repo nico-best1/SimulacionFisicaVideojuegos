@@ -15,24 +15,24 @@ void SolidRigidGenerator::generate(SolidRigidSystem* SRs) {
     physx::PxTransform transform(physx::PxVec3(generateRandom(minX, maxX), generateRandom(minY, maxY), generateRandom(minZ, maxZ)));
     physx::PxVec3 linVel(generateRandom(minVel, maxVel), generateRandom(minVel, maxVel), generateRandom(minVel, maxVel));
     physx::PxVec3 angVel(generateRandom(minAngVel, maxAngVel), generateRandom(minAngVel, maxAngVel), generateRandom(minAngVel, maxAngVel));
-    SRs->addSolid(geometryTemplate, transform, linVel, angVel, mass, customMaterial);
-    currentGenerated++;
-   /* if (currentGenerated % 5 == 0) {
+    //SRs->addSolid(geometryTemplate, transform, linVel, angVel, mass, customMaterial);
+    //currentGenerated++;
+   if (currentGenerated % 5 == 0) {
         PxBoxGeometry* cubeGeometry1 = new PxBoxGeometry(10.0f, 10.0f, 10.0f);
         physx::PxTransform transform1(Vector3(200, 80, 0));
-        SolidRigid* solid1 = SRs->addSolid(cubeGeometry1, transform1, { 0,0,0 }, { 0,0,0 }, 10, customMaterial);
+        solid1 = SRs->addSolid(cubeGeometry1, transform1, { 0,0,0 }, { 0,0,0 }, 10, customMaterial);
         physx::PxTransform transform2(Vector3(200, 0, 0));
-        SolidRigid* solid2 = SRs->addSolid(cubeGeometry1, transform2, { 0,0,0 }, { 0,0,0 }, 10, customMaterial);
+        solid2 = SRs->addSolid(cubeGeometry1, transform2, { 0,0,0 }, { 0,0,0 }, 10, customMaterial);
 
-        float springConstant = 10.0f; 
-        float restLength = 1.0f;    
+        float springConstant = 150.0f; 
+        float restLength = 60.0f;    
 
         BidirectionalSpringForceGenerator* spring = new BidirectionalSpringForceGenerator(solid1, solid2, springConstant, restLength);
         SRs->addForceGenerator(spring);
         currentGenerated += 2;
-    }*/
-    /*else {
+   }
+    else {
         SRs->addSolid(geometryTemplate, transform, linVel, angVel, mass, customMaterial);
         currentGenerated++;
-    }*/
+    }
 }

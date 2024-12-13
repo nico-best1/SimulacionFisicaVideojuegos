@@ -23,15 +23,17 @@ public:
 			render_item = nullptr;
 		}
 
-		//solid->release();
-		//solid = nullptr;
+	/*	if (solid != nullptr) {
+			solid->release();
+			solid = nullptr;
+		}*/
 	}
 
 	void integrate(double t);
 	physx::PxVec3 calculateInertiaTensor(float mass);
 
 	bool IsOutOfSite() {
-		if (getSolid()->getGlobalPose().p.x < -200) {
+		if (getSolid()->getGlobalPose().p.x < -300) {
 			return true;
 		}
 		else return false;
@@ -55,7 +57,9 @@ public:
 
 	// Get
 	physx::PxRigidDynamic* getSolid() const { return solid; }
-	physx::PxTransform getPose() const { return pose; }
+	physx::PxTransform getPose() const {
+		return solid->getGlobalPose();
+	}
 	physx::PxShape* getShape() const { return shape; }
 	physx::PxPhysics* getGPhysics() const { return &scene->getPhysics(); }
 	physx::PxMaterial* getMaterial() const {
