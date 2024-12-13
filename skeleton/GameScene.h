@@ -12,7 +12,6 @@ private:
 	// Añadir una estructura para los RenderItems
 	std::vector<RenderItem*> renderItems;
 
-	// Otros miembros...
 	physx::PxScene* scene;
 	physx::PxPhysics* physics;
 	physx::PxMaterial* material;
@@ -23,7 +22,6 @@ private:
 	SolidRigidSystem* solidSystem_obstacles;
 
 public:
-	// Constructor...
 	GameScene(physx::PxScene* scene_, physx::PxPhysics* physics_, physx::PxMaterial* material_) :
 		scene(scene_), physics(physics_), material(material_) {
 		CreateSueloTecho();
@@ -31,7 +29,6 @@ public:
 		CreateObstacles();
 	}
 
-	// Destructor actualizado
 	~GameScene() {
 		if (techo) {
 			scene->removeActor(*techo);
@@ -44,13 +41,12 @@ public:
 			suelo = nullptr;
 		}
 
-		// Liberar memoria de los RenderItems
 		for (auto item : renderItems) {
 			delete item;
 		}
 		renderItems.clear();
 
-		delete player;
+	    delete player;
 		player = nullptr;
 
 		delete particleSystem_player;
@@ -59,8 +55,6 @@ public:
 		delete solidSystem_obstacles;
 		solidSystem_obstacles = nullptr;
 	}
-
-	// Otros métodos...
 
 
 

@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-std::string display_text = "";
+std::string display_text = "Press 'SPACE' to start the game";
 
 
 using namespace physx;
@@ -61,6 +61,7 @@ enum class GameStates {
 //Items Juego
 float timeSinceLastWindGenerator = 0.0f;
 float gameTime = 0.0f;
+float bestTime = 0.0f;
 GameStates gamestateActive = GameStates::JUEGO;
 GameScene* gameScene;
 
@@ -100,8 +101,6 @@ void stepPhysics(bool interactive, double t)
 {
 	PX_UNUSED(interactive);
 
-	//timeSinceLastWindGenerator += static_cast<float>(t);
-	//IncreaseObstacleMovement(timeSinceLastWindGenerator);
 	if (gameScene != nullptr && gamestateActive == GameStates::JUEGO) {
 		gameScene->update(timeSinceLastWindGenerator, t);
 		gameTime += static_cast<float>(t);
@@ -139,16 +138,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case ' ':
 	{
+		if (gamestateActive == GameStates::INICIO) {
+			gameTime = 0.0f;
+			gamestateActive = GameStates::JUEGO;
+			gameScene = new GameScene(gScene, gPhysics, gMaterial);
+			display_text = "";
+		}
 		if (gamestateActive == GameStates::JUEGO && gameScene != nullptr) {
 			gameScene->PlayerJump();
 		}
-		if (gamestateActive == GameStates::INICIO) {
-			gamestateActive = GameStates::JUEGO;
-			gameScene = new GameScene(gScene, gPhysics, gMaterial);
-		}
 		if (gamestateActive == GameStates::FIN) {
-			gameTime = 0.0f;
 			gamestateActive = GameStates::INICIO;
+			display_text = "Press 'SPACE' to start the game";
 		}
 		break;
 	}
@@ -161,10 +162,16 @@ void keyPress(unsigned char key, const PxTransform& camera)
 void onCollision(physx::PxRigidActor* actor1, physx::PxRigidActor* actor2)
 {
 	if (gamestateActive == GameStates::JUEGO) {
-		if (gameScene->onCollisionGame(actor1, actor2)) {
-			gamestateActive == GameStates::FIN;
-			delete gameScene;
-			gameScene = nullptr;
+		if (gameScene != nullptr) {
+			if (gameScene->onCollisionGame(actor1, actor2)) {
+				gamestateActive = GameStates::FIN;
+				delete gameScene;
+				gameScene = nullptr;
+				if (bestTime < gameTime) {
+					bestTime = gameTime;
+				}
+				display_text = "You lost! Time alive: " + std::to_string(gameTime) + "   Best Time = " + std::to_string(bestTime);
+			}
 		}
 	}
 }
