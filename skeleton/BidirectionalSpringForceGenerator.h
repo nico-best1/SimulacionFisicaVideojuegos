@@ -40,26 +40,22 @@ public:
     }
 
     Vector3 newForceSolid(SolidRigid* sr) override {
-        if (solidRigid1 != nullptr && solidRigid2 != nullptr && solidRigid1->getSolid() != nullptr && solidRigid2->getSolid() != nullptr)
-        {
-            Vector3 displacement = solidRigid1->getSolid()->getGlobalPose().p - solidRigid2->getSolid()->getGlobalPose().p;
-            float length = displacement.magnitude();
-     
-            if (length > restLength) {
-                Vector3 direction = displacement.getNormalized();
-                float forceMagnitude = k * (length - restLength);
-                Vector3 force = direction * forceMagnitude;
+        Vector3 displacement = solidRigid1->getPose().p - solidRigid2->getPose().p;
+        float length = displacement.magnitude();
 
-                if (sr == solidRigid1) {
-                    return -force;
-                }
-                else if (sr == solidRigid2) {
-                    return force;
-                }
+        if (length > restLength) {
+            Vector3 direction = displacement.getNormalized(); 
+            float forceMagnitude = k * (length - restLength);
+            Vector3 force = direction * forceMagnitude; 
+
+            if (sr == solidRigid1) {
+                return -force; 
+            }
+            else if (sr == solidRigid2) {
+                return force; 
             }
         }
-        return Vector3(0, 0, 0);
+        return Vector3(0, 0, 0); 
     }
-
 
 };

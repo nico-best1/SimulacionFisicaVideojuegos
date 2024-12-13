@@ -10,8 +10,6 @@ class SolidRigidSystem;
 
 class SolidRigidGenerator {
 private:
-    SolidRigid* solid1;
-    SolidRigid* solid2;
     physx::PxGeometry* geometryTemplate;
     physx::PxMaterial* material;
     unsigned int maxGenerated;

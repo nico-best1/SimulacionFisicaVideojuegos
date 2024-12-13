@@ -9,6 +9,7 @@
 class GameScene
 {
 private:
+	// Añadir una estructura para los RenderItems
 	std::vector<RenderItem*> renderItems;
 
 	physx::PxScene* scene;
@@ -80,21 +81,32 @@ public:
 		RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
 		renderItems.push_back(item1);
 
+		// Sistema de partículas para estrellas
 		particleSystem_stars = new ParticleSystem();
 
+		// Callback para obtener una posición aleatoria en un área más amplia
 		auto starsPositionCallback = []() -> Vector3 {
 			static std::default_random_engine generator;
-			std::uniform_real_distribution<float> distributionX(-1000.0f, 1000.0f); 
-			std::uniform_real_distribution<float> distributionY(-500.0f, 300.0f);     
-			std::uniform_real_distribution<float> distributionZ(-500.0f, -200.0f);    
+			std::uniform_real_distribution<float> distributionX(-1000.0f, 1000.0f); // Área amplia en X
+			std::uniform_real_distribution<float> distributionY(-500.0f, 300.0f);     // Altura del cielo
+			std::uniform_real_distribution<float> distributionZ(-500.0f, -200.0f);    // Mínimo 200 en Z
 			return Vector3(distributionX(generator), distributionY(generator), distributionZ(generator));
 			};
 
-		int dispersion_area_x = 1000; 
-		int dispersion_area_y = 500;  
-		double particleLifetime = 1000.0; 
-		particleSystem_stars->addGenerator(starsPositionCallback, DistributionType::Uniform, dispersion_area_x,
-			dispersion_area_y, particleLifetime, false,  false,  0);
+		// Generador de estrellas
+		int dispersion_area_x = 1000; // Más amplio
+		int dispersion_area_y = 500;  // Igual que antes
+		double particleLifetime = 1000.0; // Estrellas duran indefinidamente, pero pueden ser recicladas
+		particleSystem_stars->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,   // No es una sola partícula
+			false,   // Número infinito de partículas
+			0        // Ignorado porque es infinito
+		);
 	}
 
 
