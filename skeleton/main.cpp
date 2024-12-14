@@ -129,6 +129,8 @@ void cleanupPhysics(bool interactive)
 	gFoundation->release();
 }
 
+
+
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
@@ -139,6 +141,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case ' ':
 	{
 		if (gamestateActive == GameStates::INICIO) {
+			gScene->release();
+			PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+			sceneDesc.gravity = PxVec3(0.0f, -50.0f, 0.0f);
+			gDispatcher = PxDefaultCpuDispatcherCreate(2);
+			sceneDesc.cpuDispatcher = gDispatcher;
+			sceneDesc.filterShader = contactReportFilterShader;
+			sceneDesc.simulationEventCallback = &gContactReportCallback;
+			gScene = gPhysics->createScene(sceneDesc);
 			gameTime = 0.0f;
 			gamestateActive = GameStates::JUEGO;
 			gameScene = new GameScene(gScene, gPhysics, gMaterial);
