@@ -5,13 +5,12 @@
 #include "SolidRigidSystem.h"
 #include "WindForceGenerator.h"
 #include "GravitationalForceGenerator.h"
+#include "SpringForceGenerator.h"
 #include <iostream>
 class GameScene
 {
 private:
-	// Añadir una estructura para los RenderItems
 	std::vector<RenderItem*> renderItems;
-
 	physx::PxScene* scene;
 	physx::PxPhysics* physics;
 	physx::PxMaterial* material;
@@ -19,7 +18,9 @@ private:
 	PxRigidStatic* suelo;
 	Player* player;
 	ParticleSystem* particleSystem_player;
-	ParticleSystem* particleSystem_stars;
+	ParticleSystem* particleSystem_stars1;
+	ParticleSystem* particleSystem_stars2;
+	ParticleSystem* particleSystem_stars3;
 	SolidRigidSystem* solidSystem_obstacles;
 
 public:
@@ -53,8 +54,14 @@ public:
 		delete particleSystem_player;
 		particleSystem_player = nullptr;
 
-		delete particleSystem_stars;
-		particleSystem_stars = nullptr;
+		delete particleSystem_stars1;
+		particleSystem_stars1 = nullptr;
+
+		delete particleSystem_stars2;
+		particleSystem_stars2 = nullptr;
+
+		delete particleSystem_stars3;
+		particleSystem_stars3 = nullptr;
 
 		delete solidSystem_obstacles;
 		solidSystem_obstacles = nullptr;
@@ -81,7 +88,7 @@ public:
 		RenderItem* item1 = new RenderItem(shape1, suelo, { 0, 0, 1, 1 });
 		renderItems.push_back(item1);
 
-		particleSystem_stars = new ParticleSystem();
+		particleSystem_stars1 = new ParticleSystem();
 
 		auto starsPositionCallback = []() -> Vector3 {
 			static std::default_random_engine generator;
@@ -91,11 +98,11 @@ public:
 			return Vector3(distributionX(generator), distributionY(generator), distributionZ(generator));
 			};
 
-		// Generador de estrellas
+		// Generador de estrellas 1
 		int dispersion_area_x = 1000; 
 		int dispersion_area_y = 500;  
 		double particleLifetime = 10000.0; 
-		particleSystem_stars->addGenerator(
+		particleSystem_stars1->addGenerator(
 			starsPositionCallback,
 			DistributionType::Uniform,
 			dispersion_area_x,
@@ -104,8 +111,47 @@ public:
 			false,   
 			false,
 			true,    
-			200       
+			60       
 		);
+
+		particleSystem_stars1->addForceGenerator(new SpringForceGenerator(Vector3(0.0f, -50.0f, -200.0f), 0.2f, 1.0f));
+
+
+		// Generador de estrellas 2
+		particleSystem_stars2 = new ParticleSystem();
+
+		particleSystem_stars2->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,
+			false,
+			true,
+			60
+		);
+
+		particleSystem_stars2->addForceGenerator(new SpringForceGenerator(Vector3(300.0f, 100.0f, -200.0f), 0.4f, 2.5f));
+
+
+		// Generador de estrellas 3
+		particleSystem_stars3 = new ParticleSystem();
+
+
+		particleSystem_stars3->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,
+			false,
+			true,
+			60
+		);
+
+		particleSystem_stars3->addForceGenerator(new SpringForceGenerator(Vector3(-300.0f, 50.0f, -200.0f), 0.6f, 5.0f));
 	}
 
 
@@ -191,7 +237,9 @@ public:
 	}
 
 	void update(float& timeSinceLastWindGenerator, double t) {
-		particleSystem_stars->update(t);
+		particleSystem_stars1->update(t);
+		particleSystem_stars2->update(t);
+		particleSystem_stars3->update(t);
 		particleSystem_player->update(t);
 		solidSystem_obstacles->update(t);
 		IncreaseObstacleMovement(timeSinceLastWindGenerator);
