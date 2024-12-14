@@ -21,6 +21,9 @@ private:
 	ParticleSystem* particleSystem_stars1;
 	ParticleSystem* particleSystem_stars2;
 	ParticleSystem* particleSystem_stars3;
+	ParticleSystem* particleSystem_stars4;
+	ParticleSystem* particleSystem_stars5;
+	ParticleSystem* particleSystem_stars6;
 	SolidRigidSystem* solidSystem_obstacles;
 
 public:
@@ -61,6 +64,15 @@ public:
 		particleSystem_stars2 = nullptr;
 
 		delete particleSystem_stars3;
+		particleSystem_stars3 = nullptr;
+
+		delete particleSystem_stars4;
+		particleSystem_stars3 = nullptr;
+
+		delete particleSystem_stars5;
+		particleSystem_stars3 = nullptr;
+
+		delete particleSystem_stars6;
 		particleSystem_stars3 = nullptr;
 
 		delete solidSystem_obstacles;
@@ -152,6 +164,61 @@ public:
 		);
 
 		particleSystem_stars3->addForceGenerator(new SpringForceGenerator(Vector3(-300.0f, 50.0f, -200.0f), 0.6f, 5.0f));
+
+
+		// Generador de estrellas 4
+		particleSystem_stars4 = new ParticleSystem();
+
+
+		particleSystem_stars4->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,
+			false,
+			true,
+			60
+		);
+
+		particleSystem_stars4->addForceGenerator(new SpringForceGenerator(Vector3(0.0f, 250.0f, -200.0f), 0.1f, 3.0f));
+
+		// Generador de estrellas 5
+		particleSystem_stars5 = new ParticleSystem();
+
+
+		particleSystem_stars5->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,
+			false,
+			true,
+			60
+		);
+
+		particleSystem_stars5->addForceGenerator(new SpringForceGenerator(Vector3(-330.0f, -250.0f, -200.0f), 0.8f, 4.0f));
+
+		// Generador de estrellas 6
+		particleSystem_stars6 = new ParticleSystem();
+
+
+		particleSystem_stars6->addGenerator(
+			starsPositionCallback,
+			DistributionType::Uniform,
+			dispersion_area_x,
+			dispersion_area_y,
+			particleLifetime,
+			false,
+			false,
+			true,
+			60
+		);
+
+		particleSystem_stars6->addForceGenerator(new SpringForceGenerator(Vector3(300.0f, -250.0f, -200.0f), 0.6f, 5.0f));
 	}
 
 
@@ -240,6 +307,9 @@ public:
 		particleSystem_stars1->update(t);
 		particleSystem_stars2->update(t);
 		particleSystem_stars3->update(t);
+		particleSystem_stars4->update(t);
+		particleSystem_stars5->update(t);
+		particleSystem_stars6->update(t);
 		particleSystem_player->update(t);
 		solidSystem_obstacles->update(t);
 		IncreaseObstacleMovement(timeSinceLastWindGenerator);
