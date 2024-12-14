@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-std::string display_text = "Press 'SPACE' to start the game";
+std::string display_text = "Welcome to STARBOUND!     Press 'SPACE' to start the game";
 
 
 using namespace physx;
@@ -159,7 +159,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		}
 		if (gamestateActive == GameStates::FIN) {
 			gamestateActive = GameStates::INICIO;
-			display_text = "Press 'SPACE' to start the game";
+			display_text = "STARBOUND   Press 'SPACE' to start a new game";
 		}
 		break;
 	}
@@ -180,7 +180,7 @@ void onCollision(physx::PxRigidActor* actor1, physx::PxRigidActor* actor2)
 				if (bestTime < gameTime) {
 					bestTime = gameTime;
 				}
-				display_text = "You lost! Time alive: " + std::to_string(gameTime) + "   Best Time = " + std::to_string(bestTime);
+				display_text = "You died!  Time alive: " + std::to_string(gameTime) + "  Best Time: " + std::to_string(bestTime);
 			}
 		}
 	}
