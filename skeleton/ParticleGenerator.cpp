@@ -28,7 +28,11 @@ void ParticleGenerator::update(ParticleSystem* ps, double t)
         ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime, GenerateRandomColorYR());
         numParticles++;
     }
-    else if (!generateSingleParticle && !numFiniteParticles) {
+    else if (estrellas && numParticles < numMaxParticles) {
+        ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime, { 1,1,1,1 });
+        numParticles++;
+    }
+    else if (!generateSingleParticle && !numFiniteParticles && !estrellas) {
         ps->addParticle(currentPosition, velocityX, velocityY, velocityZ, 0.98, particleLifetime, {1,1,1,1});
     }
 }

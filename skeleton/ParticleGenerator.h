@@ -20,6 +20,7 @@ private:
     bool generateSingleParticle;
     bool singleParticleGenerated = false;
     bool numFiniteParticles = false;
+    bool estrellas;
     int numParticles = 0;
     int numMaxParticles;
 
@@ -35,6 +36,7 @@ public:
         double particleLifetime_,
         bool generateSingleParticle_,
         bool numFiniteParticles_,
+        bool estrellas_,
         int numMaxParticles_)
         : getPositionCallback(positionCallback),
         dispersion_area_x(dispersion_area_x_),
@@ -42,6 +44,7 @@ public:
         particleLifetime(particleLifetime_),
         generateSingleParticle(generateSingleParticle_),
         numFiniteParticles(numFiniteParticles_),
+        estrellas(estrellas_),
         numMaxParticles(numMaxParticles_) {
     }
 

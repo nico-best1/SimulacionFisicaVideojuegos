@@ -45,10 +45,11 @@ public:
         double particleLifetime,
         bool singleParticleGenerator,
         bool finiteParticles,
+        bool estrellas_,
         int numMaxParticles) {
         generators.push_back(new ParticleGenerator(positionCallback, distributionType, dispersion_area_x_,
             dispersion_area_y_, particleLifetime, singleParticleGenerator,
-            finiteParticles, numMaxParticles));
+            finiteParticles, estrellas_,  numMaxParticles));
     }
 
 
