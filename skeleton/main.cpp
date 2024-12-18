@@ -102,8 +102,13 @@ void stepPhysics(bool interactive, double t)
 	PX_UNUSED(interactive);
 
 	if (gameScene != nullptr && gamestateActive == GameStates::JUEGO) {
-		gameScene->update(timeSinceLastWindGenerator, t);
+		gameScene->update(t);
 		gameTime += static_cast<float>(t);
+		timeSinceLastWindGenerator += static_cast<float>(t);
+		if (timeSinceLastWindGenerator >= 5.0f) {
+			gameScene->IncreaseObstacleMovement();
+			timeSinceLastWindGenerator = 0.0f;
+		}
 	}
 
 	gScene->simulate(t);
@@ -157,12 +162,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		if (gamestateActive == GameStates::JUEGO && gameScene != nullptr) {
 			gameScene->PlayerJump();
 		}
+		break;
+	}
+	case 'R':
 		if (gamestateActive == GameStates::FIN) {
 			gamestateActive = GameStates::INICIO;
 			display_text = "STARBOUND   Press 'SPACE' to start a new game";
 		}
 		break;
-	}
 	default:
 		break;
 	}
@@ -180,7 +187,7 @@ void onCollision(physx::PxRigidActor* actor1, physx::PxRigidActor* actor2)
 				if (bestTime < gameTime) {
 					bestTime = gameTime;
 				}
-				display_text = "You died!  Time alive: " + std::to_string(gameTime) + "  Best Time: " + std::to_string(bestTime);
+				display_text = "You died!  Time alive: " + std::to_string(gameTime) + "  Best Time: " + std::to_string(bestTime) + "  Press 'R'";
 			}
 		}
 	}

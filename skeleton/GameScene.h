@@ -25,6 +25,7 @@ private:
 	ParticleSystem* particleSystem_stars5;
 	ParticleSystem* particleSystem_stars6;
 	SolidRigidSystem* solidSystem_obstacles;
+	float windSpeedMultiplier = 1.0f;
 
 public:
 	GameScene(physx::PxScene* scene_, physx::PxPhysics* physics_, physx::PxMaterial* material_) :
@@ -67,13 +68,13 @@ public:
 		particleSystem_stars3 = nullptr;
 
 		delete particleSystem_stars4;
-		particleSystem_stars3 = nullptr;
+		particleSystem_stars4 = nullptr;
 
 		delete particleSystem_stars5;
-		particleSystem_stars3 = nullptr;
+		particleSystem_stars5 = nullptr;
 
 		delete particleSystem_stars6;
-		particleSystem_stars3 = nullptr;
+		particleSystem_stars6 = nullptr;
 
 		delete solidSystem_obstacles;
 		solidSystem_obstacles = nullptr;
@@ -262,18 +263,16 @@ public:
 		solidSystem_obstacles->addForceGenerator(new WindForceGenerator(windVelocity, k1, k2, center, radius));
 	}
 
-	void IncreaseObstacleMovement(float& timeSinceLastWindGenerator_) {
-		if (timeSinceLastWindGenerator_ >= 3.0f) {
-			Vector3 newWindVelocity(-50.0f, 0.0f, 0.0f);
-			float newK1 = 0.3f;
-			float newK2 = 0.7f;
-			Vector3 newCenter(0.0f, 0.0f, 0.0f);
-			float newRadius = 1000.0f;
-
-			solidSystem_obstacles->addForceGenerator(new WindForceGenerator(newWindVelocity, newK1, newK2, newCenter, newRadius));
-			timeSinceLastWindGenerator_ = 0.0f;
-		}
+	void IncreaseObstacleMovement() {
+		Vector3 windVelocity(-50.0f * windSpeedMultiplier, 0.0f, 0.0f);
+		float k1 = 0.3f;
+		float k2 = 0.7f;
+		Vector3 center(0.0f, 0.0f, 0.0f);
+		float radius = 1000.0f;
+		solidSystem_obstacles->addForceGenerator(new WindForceGenerator(windVelocity, k1, k2, center, radius));
 	}
+
+
 
 	void PlayerJump() {
 		player->jump(Vector3(0, 35, 0), 0.05);
@@ -303,7 +302,7 @@ public:
 		return false;
 	}
 
-	void update(float& timeSinceLastWindGenerator, double t) {
+	void update(double t) {
 		particleSystem_stars1->update(t);
 		particleSystem_stars2->update(t);
 		particleSystem_stars3->update(t);
@@ -312,7 +311,12 @@ public:
 		particleSystem_stars6->update(t);
 		particleSystem_player->update(t);
 		solidSystem_obstacles->update(t);
-		IncreaseObstacleMovement(timeSinceLastWindGenerator);
+
+		windSpeedMultiplier += 0.05f * t;
+		if (windSpeedMultiplier > 5.0f) { 
+			windSpeedMultiplier = 5.0f;
+		}
 	}
+
 };
 
