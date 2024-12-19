@@ -1,8 +1,21 @@
-# SimulacionFisicaVideojuegos
-Repositorio de las prácticas de la asignatura de Simulación Física de Videojuegos
+# STARBOUND
+Starbound es un juego de scroll lateral con ambientación espacial, en el que esquivas obstáculos buscando romper tu propio récord anterior de tiempo sobrevivido.
 
-En la carpeta skeleton estará vuestro código fuente
+## Manual de Usuario
 
-Necesitaréis además descomprimir el archivo que se indica a continuación en la raíz del repositorio:
+### Teclas de Control:
+- **‘SPACE’**:
+  - En el menú inicial, comienza el juego.
+  - En el juego, activa el propulsor del jugador para esquivar obstáculos (Se puede mantener).
+  
+- **‘ESCAPE’**:
+  - Cierra el juego.
+  
+- **‘R’**:
+  - En el ‘Game Over’ vuelve al menú inicial para poder empezar otra partida.
 
-Carpetas bin y common https://ucomplutense-my.sharepoint.com/:f:/g/personal/liagar05_ucm_es/ElNxHPmZVj9Ni9-8FKTKp7cBJHAarnL3vvEvG50z0QMrzg
+### Pantallas:
+- **Menú inicial**: Mensaje de bienvenida con instrucciones.
+- **Juego**: Vista principal del jugador, los obstáculos y el fondo.
+- **‘Game Over’**: Tiempo sobrevivido y récord alcanzado.
+
